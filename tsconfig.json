@@ -17,7 +17,16 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react"
+    "jsx": "react",
+
+    "baseUrl": "src/",
+    "noImplicitReturns": false,
+    "noImplicitThis": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "strictNullChecks": false,
+    "experimentalDecorators": true
+    
   },
   "include": [
     "src"
