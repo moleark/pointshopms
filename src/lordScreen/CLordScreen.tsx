@@ -11,21 +11,20 @@ export class CLordScreen extends CUqBase {
      * 首屏界面去向
      */
     openInterfaceCase = async (state: any) => {
-        let { cProduct, cPointProduct } = this.cApp;
-        let { openProductList, openProductGenre, openProductContent, } = cProduct;
-        let { openPointProduct } = cPointProduct;
+        let { cProduct, cPointProduct, cMe } = this.cApp;
+        let { openProductList, openCreationProduct, } = cProduct;
         switch (state) {
             case 'productList':
                 await openProductList();
                 return;
             case 'productGenre':
-                await openProductGenre();
+                await cMe.openProductGenre();
                 return;
             case 'creationProduct':
-                await openProductContent();
+                await openCreationProduct();
                 return;
             case 'pointProduct':
-                await openPointProduct();
+                await cPointProduct.openPointProduct();
                 return;
             default:
                 return;

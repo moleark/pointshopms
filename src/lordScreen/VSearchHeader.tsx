@@ -5,7 +5,7 @@ import { CUqBase } from 'CBase';
 import classNames from 'classnames';
 
 export class VSearchHeader extends View<CUqBase> {
-    protected placeholder: string = '搜索品名、编号等';
+    protected placeholder: string = '搜索商品名称';
     private onSearch = async (key: string, param: 'home' | 'insearch' | 'productdetail') => {
         let { topKey } = this.controller.cApp;
         if (param !== 'home') {

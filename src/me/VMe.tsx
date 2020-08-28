@@ -21,8 +21,23 @@ export class VMe extends VPage<CMe> {
     }
 
     private openProuctGenre = async () => {
-        let { cProduct } = this.controller.cApp;
-        cProduct.openProductGenre();
+        await this.controller.openProductGenre();
+    }
+
+    private openLottery = async () => {
+        await this.controller.openLottery();
+    }
+
+    private openProductViews = async () => {
+        let { cApp } = this.controller;
+        let { cReport } = cApp;
+        await cReport.openProductViews();
+    }
+
+    private openPointsDist = async () => {
+        let { cApp } = this.controller;
+        let { cReport } = cApp;
+        await cReport.openPointsDist();
     }
 
     private meInfo = observer(() => {
@@ -90,6 +105,22 @@ export class VMe extends VPage<CMe> {
                     type: 'component',
                     component: <IconText iconClass="text-info mr-2" icon="th-large" text="商品类型" />,
                     onClick: this.openProuctGenre
+                },
+                {
+                    type: 'component',
+                    component: <IconText iconClass="text-info mr-2" icon="life-ring" text="抽奖商品" />,
+                    onClick: this.openLottery
+                },
+                '',
+                {
+                    type: 'component',
+                    component: <IconText iconClass="text-info mr-2" icon="eye" text="商品浏览量" />,
+                    onClick: this.openProductViews
+                },
+                {
+                    type: 'component',
+                    component: <IconText iconClass="text-info mr-2" icon="cubes" text="客户积分分布" />,
+                    onClick: this.openPointsDist
                 },
                 '',
                 {

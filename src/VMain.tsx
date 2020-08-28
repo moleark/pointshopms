@@ -9,9 +9,10 @@ export class VMain extends VPage<CPointMallApp> {
         this.openPage(this.render);
     }
     render = (param?: any): JSX.Element => {
-        let { cMe, cLordScreen } = this.controller;
+        let { cMe, cProduct, cPointProduct } = this.controller;
         let faceTabs = [
-            { name: 'home', label: '首页', icon: 'home', content: cLordScreen.tab, notify: undefined/*store.homeCount*/ },
+            { name: 'home', label: '首页', icon: 'home', content: cProduct.tab, notify: undefined },
+            { name: 'me', label: '积分商品', icon: 'diamond', content: cPointProduct.tab },
             { name: 'me', label: '我的', icon: 'user', content: cMe.tab }
         ].map(v => {
             let { name, label, icon, content, notify } = v;

@@ -55,7 +55,7 @@ export class VProductGenre extends VPage<CGenre> {
         </div>
         return <LMR right={right}>
             <div className="pt-2 px-2">
-                <span className=" m-auto"><PointProductImage chemicalId={currentGenre.imgUrl ? currentGenre.imgUrl : '1'} className="w-4c" /></span>
+                <span className=" m-auto"><PointProductImage chemicalId={currentGenre.imageUrl ? currentGenre.imageUrl : '1'} className="w-4c" /></span>
                 {currentGenre.name}</div>
         </LMR>;
     }

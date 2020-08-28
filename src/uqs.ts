@@ -1,4 +1,4 @@
-import { Tuid, Map, Query, Action, Sheet } from "tonva";
+import { Tuid, Map, Query, Action, Sheet, Book } from "tonva";
 
 export interface UqProduct {
     ProductX: Tuid;
@@ -13,6 +13,7 @@ export interface UqProduct {
     SearchProduct: Query;
     SearchProductByCategory: Query;
     GetFutureDeliveryTime: Query;
+    SearchPointProduct: Query;
 }
 
 export interface UqCommon {
@@ -48,6 +49,11 @@ export interface UqPointShop {
     PointExchangeSheet: Sheet;
     GetPointProduct: Query;
     PointProduct: Map;
+    PointProductLib: Tuid;
+    PointProductSource: Map;
+    PointProductHotStat: Book;
+    SetPointProductVisits: Action;
+    GetPointProductGenre: Query;
 }
 
 export interface UQs {

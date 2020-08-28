@@ -27,7 +27,7 @@ export class CGenre extends CUqBase {
     }
 
     /**
-    * 创建商品类型  -------------图标imgUrl：'1'---------------
+    * 创建商品类型
     */
     creationGenre = async (currentGenre: string) => {
         let { 积分商城 } = this.uqs;
@@ -41,20 +41,18 @@ export class CGenre extends CUqBase {
     */
     onSaveGenre = async (currentGenre: any) => {
         let { 积分商城 } = this.uqs;
-        let { id, name, imgUrl } = currentGenre;
-        // let rawData = await 积分商城.Genre.load(id);/* 原始数据 */
-        // let { name: rname, imgUrl: rimgUrl } = rawData
-        // if (name !== rname || imgUrl !== rimgUrl) {
-        //     await 积分商城.Genre.save(id, { name, imgUrl });
-        //     let findGenreIndex = this.productGenres.findIndex((v: any) => v.id === id);
-        //     this.productGenres.splice(findGenreIndex, 1, currentGenre);
-        // }
-
-        await 积分商城.Genre.save(id, { name });
-        let findGenreIndex = this.productGenres.findIndex((v: any) => v.id === id);
-        this.productGenres.splice(findGenreIndex, 1, currentGenre);
-
+        let { id, name, imageUrl } = currentGenre;
+        let rawData = await 积分商城.Genre.load(id);/* 原始数据 */
+        let { name: rname, imageUrl: rimgUrl } = rawData
+        if (name !== rname || imageUrl !== rimgUrl) {
+            await 积分商城.Genre.save(id, { name, imageUrl });
+            let findGenreIndex = this.productGenres.findIndex((v: any) => v.id === id);
+            this.productGenres.splice(findGenreIndex, 1, currentGenre);
+        }
         this.closePage();
+        /* await 积分商城.Genre.save(id, { name });
+        let findGenreIndex = this.productGenres.findIndex((v: any) => v.id === id);
+        this.productGenres.splice(findGenreIndex, 1, currentGenre); */
     }
 
     /**

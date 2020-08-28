@@ -7,7 +7,7 @@ import { CGenre } from './CGenre';
 import { observer } from 'mobx-react';
 const schema: Schema = [
     { name: 'id', type: 'id', required: false },
-    { name: 'imgUrl', type: 'image', required: false },
+    { name: 'imageUrl', type: 'image', required: false },
     { name: 'name', type: 'string', required: true },
 ];
 
@@ -17,7 +17,7 @@ export class EditProductGenre extends VPage<CGenre>{
     private uiSchema: UiSchema = {
         items: {
             id: { visible: false },
-            imgUrl: { widget: 'image', label: '图标' } as UiImageItem,
+            imageUrl: { widget: 'image', label: '图标' } as UiImageItem,
             name: { widget: 'text', label: '类型', placeholder: '商品类型', rules: productGenreValidation } as UiInputItem,
             submit: { widget: 'button', label: '提交' },
         }
@@ -61,7 +61,6 @@ export class EditProductGenre extends VPage<CGenre>{
                         上传图标
                     </button>
                 </div> */}
-                {/* <small className="text-success py-1">注：点击图片区域即可更换图标</small> */}
                 <Form ref={v => this.form = v} className="mb-3"
                     schema={schema}
                     uiSchema={this.uiSchema}
