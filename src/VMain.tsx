@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { VPage, TabCaptionComponent, Page } from 'tonva';
-import { CPointMallApp } from 'CPointMallApp';
+import { CPointShopMsApp } from 'CPointShopMsApp';
 
 const color = (selected: boolean) => selected === true ? 'text-primary' : 'text-muted';
 
-export class VMain extends VPage<CPointMallApp> {
+export class VMain extends VPage<CPointShopMsApp> {
     async open(param?: any) {
         this.openPage(this.render);
     }
     render = (param?: any): JSX.Element => {
-        let { cMe, cProduct, cPointProduct } = this.controller;
+        let { cMe, cProduct } = this.controller;
         let faceTabs = [
             { name: 'home', label: '首页', icon: 'home', content: cProduct.tab, notify: undefined },
-            { name: 'me', label: '积分商品', icon: 'diamond', content: cPointProduct.tab },
+            // { name: 'me', label: '积分商品', icon: 'diamond', content: cPointProduct.tab },
             { name: 'me', label: '我的', icon: 'user', content: cMe.tab }
         ].map(v => {
             let { name, label, icon, content, notify } = v;

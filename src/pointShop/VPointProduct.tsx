@@ -100,7 +100,6 @@ export class VPointProduct extends VPage<CPointProduct>{
         let genreNone = <div className="py-1 pl-2 small text-secondary">暂无商品类型,请去新增类型 &rArr; 我的 &raquo;&raquo; 商品类型</div>
         return <Page header={header} back='none'>
             <>
-                {/* {this.searchKey && searchKeyShow(this.searchKey, this.refreshPointProduct)} */}
                 <div className="border-bottom">
                     <div className="w-24c mt-1 mx-3 d-flex justify-content-between">
                         <small>商品类型：{this.filterGenre}</small>
@@ -108,13 +107,6 @@ export class VPointProduct extends VPage<CPointProduct>{
                             <FA name="times-circle-o" className="text-danger" />
                         </span>
                     </div>
-                    {/* <List items={cGenre.productGenres}
-                        item={{
-                            render: this.renderPointGenre,
-                            onClick: (genre) => { this.searchKey = undefined; filterByProductGenre(genre); this.filterGenre = genre.name; },
-                            className: "m-1"
-                        }}
-                        className="mb-1 mx-3 bg-light d-flex flex-wrap" none={genreNone} /> */}
                     <List className="d-flex flex-wrap py-2 text-center bg-transparent"
                         items={cGenre.productGenres}
                         item={{

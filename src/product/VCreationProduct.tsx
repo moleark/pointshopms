@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VPage, Page, tv, List, FA, LMR, Scroller } from 'tonva';
+import { VPage, Page, List, FA, LMR, Scroller } from 'tonva';
 import { CProduct, ProductSources } from 'product/CProduct';
 import { PointProductImage } from 'tools/productImage';
 import { observer } from 'mobx-react';
@@ -57,14 +57,14 @@ export class VCreationProduct extends VPage<CProduct>{
         let { searchProductsToCreation, onProductSelected } = this.controller;
         let right = <button className="btn btn-primary w-100" onClick={this.searchProduct}><FA name="search" /></button>
 
-        return <Page header="商品新增-新版" onScrollBottom={this.onScrollBottom}>
+        return <Page header="商品新增" onScrollBottom={this.onScrollBottom}>
             <div className="p-2 border-bottom">
                 <div className="d-flex flex-column mb-2">
                     <div className="my-1">商品源：<small>{this.selectedProductSource ? this.selectedProductSource.type : null}</small></div>
                     <List items={ProductSources} item={{ render: this.renderDataSources, onClick: this.selectSource }} className="d-flex bg-white w-100 flex-wrap" none="暂无商品源" />
                 </div>
                 <LMR right={right}>
-                    <input ref={v => this.genreInput = v} type="text" placeholder="请先选择商品源,再输入商品名称" className="form-control"></input>
+                    <input ref={v => this.genreInput = v} type="text" placeholder="请输入商品名称" className="form-control"></input>
                 </LMR>
                 {this.searchIsBlank ? <div className="text-danger mt-1 small">{`${!this.genreInput.value ? '请输入查询名称' : !this.selectedProductSource ? '请选择商品源' : ''}`}</div> : null}
             </div>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { VPage, Page, LMR, List, } from 'tonva';
+import { VPage, Page, List, } from 'tonva';
 import { CLottery } from './CLottery';
 
 export class VLotteryProduct extends VPage<CLottery> {

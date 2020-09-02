@@ -1,9 +1,9 @@
 import { CBase, CAppBase, IConstructor } from "tonva";
 import { UQs } from "./uqs";
-import { CPointMallApp } from "CPointMallApp";
+import { CPointShopMsApp } from "CPointShopMsApp";
 
 export abstract class CUqBase extends CBase {
-    get cApp(): CPointMallApp { return this._cApp; }
+    get cApp(): CPointShopMsApp { return this._cApp; }
     protected get uqs(): UQs { return this._uqs as UQs }
 }
 

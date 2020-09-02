@@ -3,7 +3,6 @@ import { nav, } from 'tonva';
 import { VMain } from 'VMain';
 import { CUqApp } from 'CBase'
 import { WebUser } from 'currentUser';
-// import { GLOABLE } from 'configuration';
 import { CMe } from 'me/CMe';
 import { CLordScreen } from 'lordScreen/CLordScreen';
 import { CProduct } from 'product/CProduct';
@@ -13,7 +12,7 @@ import { CLottery } from 'pointShop/CLottery';
 import { CReport } from 'report/CReport';
 import { GLOABLE } from 'configuration';
 
-export class CPointMallApp extends CUqApp {
+export class CPointShopMsApp extends CUqApp {
     // get uqs(): UQs { return this._uqs; }
 
     topKey: any;
@@ -38,6 +37,7 @@ export class CPointMallApp extends CUqApp {
             Language.load(GLOABLE.CHINESE),
         ]);
         this.currentSalesRegion = currentSalesRegion;
+        this.currentLanguage = currentLanguage;
 
         this.currentUser = new WebUser(this.uqs);
         if (this.isLogined) {
@@ -49,12 +49,15 @@ export class CPointMallApp extends CUqApp {
         await this.cProduct.getProductLibrary();
         this.cPointProduct = this.newC(CPointProduct);
         this.cGenre = this.newC(CGenre);
-
-        // await this.cGenre.getProductGenres();
+        await this.cGenre.getProductGenres();
         this.cLottery = this.newC(CLottery);
         this.cReport = this.newC(CReport);
         this.topKey = nav.topKey();
-        this.showMain();
+
+        this.cReport.openPointsDist();
+        // this.cReport.openProductViews();
+
+        // this.showMain();
     }
 
     showMain(initTabName?: string) {

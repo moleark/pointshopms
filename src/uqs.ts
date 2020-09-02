@@ -44,6 +44,8 @@ export interface UqWebUser {
 
 
 export interface UqPointShop {
+    PointBook: Book;
+    getPoints: Query;
     Genre: Tuid;
     PointProductGenre: Map;
     PointExchangeSheet: Sheet;

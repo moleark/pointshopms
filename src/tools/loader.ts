@@ -1,11 +1,11 @@
 import { Entity } from 'tonva';
-import { CPointMallApp } from 'CPointMallApp';
+import { CPointShopMsApp } from 'CPointShopMsApp';
 
 export abstract class Loader<T> {
-    protected cApp: CPointMallApp;
+    protected cApp: CPointShopMsApp;
     private entities: Entity[] = [];
     private schemaLoaded: boolean = false;
-    constructor(cApp: CPointMallApp) {
+    constructor(cApp: CPointShopMsApp) {
         this.cApp = cApp;
     }
 

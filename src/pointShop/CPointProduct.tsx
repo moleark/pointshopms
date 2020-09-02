@@ -2,7 +2,6 @@ import { CUqBase } from 'CBase';
 import { observable } from 'mobx';
 import { VPointProduct, VSearchPointProduct } from './VPointProduct';
 import { VPointProductSearchHeader } from 'lordScreen/VSearchHeader';
-import { QueryPager } from 'tonva';
 
 export class CPointProduct extends CUqBase {
     @observable pointProducts: any[] = [];    /* 可兑换商品 */
@@ -111,7 +110,7 @@ export class CPointProduct extends CUqBase {
      * 删除指定可兑换商品的类型
      */
     delProductGenre = async (productInfo: any) => {
-        let { product, pack, genre, pointProduct, } = productInfo;
+        let { genre, pointProduct, } = productInfo;
         await this.uqs.积分商城.PointProductGenre.del({ genre: genre.id, arr1: [{ pointProduct: pointProduct.id }] });
         // await this.uqs.积分商城.PointProductGenre.del({ genre, product, arr1: [{ pack }] });
     }
