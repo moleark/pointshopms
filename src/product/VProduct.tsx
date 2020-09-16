@@ -64,9 +64,9 @@ export class VProduct extends VPage<CProduct>{
         let { cGenre } = cApp;
         let siteHeader = this.renderVm(VSiteHeader);
         let genreNone = <div className="ml-4 pl-2 small text-secondary">暂无商品类型,请去新增类型 &rArr; 我的 &raquo;&raquo; 商品类型</div>
-        return <>
+        return <div className="bg-light">
             {siteHeader}
-            <div className="border-bottom mb-1">
+            <div className="border-bottom mb-1 bg-light pt-2">
                 <div className="w-24c mt-1 mx-3 d-flex justify-content-between">
                     <small className={classNames(cGenre.productGenres.length && 'mb-2')}>商品类型：{this.filterGenre}</small>
                     <span className={classNames(!this.filterGenre && 'd-none')} onClick={this.refreshProduct}>
@@ -82,7 +82,7 @@ export class VProduct extends VPage<CProduct>{
                     }} none={genreNone} />
             </div>
             <List items={productLibrary} item={{ render: this.renderPointProduct, onClick: (v: any) => { this.controller.currentSource = ProductSources[0]; onProductSelected(v) } }} none={noProductNone} />
-        </>
+        </div>
     })
 }
 

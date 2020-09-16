@@ -120,7 +120,7 @@ export class VProductOperation extends VPage<CProduct>{
             <div className="position-fixed" style={{ top: '45%', left: '10%', right: '10%', zIndex: 3 }}>{React.createElement(this.tipsUI)}</div>
             {this.productSelectEntry('商品类型', toGenreSelect, genreShow ? genreShow : '选择商品类型', productGenreBlankTip)}
 
-            <div className="px-3 py-2">
+            <div className="px-3 py-2 bg-white">
                 <div className="text-muted">商品信息:</div>
                 <div className="m-1 w-100 d-flex flex-column position-relative">
                     <div title={description} className="w-75 m-auto"><PointProductImage chemicalId={imageUrl} className="w-100" /></div>
@@ -135,7 +135,7 @@ export class VProductOperation extends VPage<CProduct>{
                 </div>
             </div>
             {
-                <div className="container text-left border-bottom">
+                <div className="container text-left border-bottom bg-white">
                     <Form ref={v => this.form = v}
                         schema={schema}
                         uiSchema={this.uiSchema}

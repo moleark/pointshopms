@@ -138,7 +138,7 @@ export class CProduct extends CUqBase {
         /* 商品是否有类型 */
         let productGenre = await this.getProductGenre(currentProduct);
         /* 商品信息 */
-        let result = this.isCreationProduct ? { ...(product ? { ...product.obj, sourceId: id.id } : {}), radiox, radioy, unit } : getProductCompleteInfo;
+        let result = this.isCreationProduct ? { ...(product ? { ...product.obj, sourceId: id.id } : {}), radiox, radioy, unit, grade: `${radioy}${unit}` } : getProductCompleteInfo;
         this.goalProductInfo = {
             ...result,
             // ...currentProduct,
@@ -270,12 +270,20 @@ export class CProduct extends CUqBase {
      * 商品上架  (纯粹的上架,上架前所有的商品皆无类型)
      */
     upShelfProduct = async (productInfo: any) => {
-        /* 新增商品添加数据源 */
-        if (this.isCreationProduct)
-            await this.addPointProductSource(productInfo);
-        await this.addProductGenre(productInfo);
         productInfo.id = undefined;
         await this.savePointProduct(productInfo);
+        let isExchangeProduct: any[] = await this.searchByKey(productInfo.descriptionC);
+        let res;
+        for (let key of isExchangeProduct) {
+            if (key.descriptionC === productInfo.descriptionC)
+                res = await this.getPointProductLibLoad(key.id);
+        }
+        productInfo.id = res.id;
+        await this.addProductGenre(productInfo);
+        /* 新增商品添加数据源 */
+        let resSource = await this.getProductSources(productInfo);
+        if (!resSource)
+            await this.addPointProductSource(productInfo);
     }
 
     /**
@@ -291,7 +299,7 @@ export class CProduct extends CUqBase {
      */
     savePointProduct = async (productInfo: any) => {
         let { id, description, descriptionC, grade, point, startDate, endDate, imageUrl, isValid } = productInfo;
-        await this.uqs.积分商城.PointProductLib.save(id, { description, descriptionC, grade, point, startDate, endDate, imageUrl, isValid });
+        await this.uqs.积分商城.PointProductLib.save(id, { description, descriptionC, grade, point, startDate, endDate, imageUrl, isValid: 1 });
     }
 
     /**

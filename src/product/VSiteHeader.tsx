@@ -11,7 +11,7 @@ export class VSiteHeader extends View<CProduct> {
             <i className="fa fa-circle-o fa-stack-2x text-success"></i>
             <i className="fa fa-plus fa-stack-1x text-success"></i>
         </span>
-        return <div className="mb-3" style={{ borderBottom: '1px dashed #dee2e6' }}>
+        return <div style={{ borderBottom: '1px dashed #dee2e6' }}>
             <LMR className="mb-1 py-1 align-items-center bg-white" left={left} right={right}>
                 <div className="mt-1 mx-3">
                     {renderSearchHeader()}

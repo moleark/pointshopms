@@ -65,7 +65,7 @@ export class VCreationProduct extends VPage<CProduct>{
         let right = <button className="btn btn-primary w-100" onClick={this.searchProduct}><FA name="search" /></button>
 
         return <Page header="商品新增" onScrollBottom={this.onScrollBottom}>
-            <div className="p-2 border-bottom">
+            <div className="p-2 border-bottom bg-white">
                 <div className="d-flex flex-column mb-2">
                     <div className="my-1">商品源：<small>{this.selectedProductSource ? this.selectedProductSource.type : null}</small>
                         {this.selectedProductSource.type === 'jd.com' ? <small className="text-danger">( 正在开发中... )</small> : null}
