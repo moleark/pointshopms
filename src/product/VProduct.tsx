@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VPage, Page, List, FA } from 'tonva';
+import { VPage, Page, List, FA, tv } from 'tonva';
 import { CProduct, ProductSources } from 'product/CProduct';
 import { PointProductImage } from 'tools/productImage';
 import { searchKeyShow } from 'lordScreen/VSearchHeader';
@@ -63,12 +63,12 @@ export class VProduct extends VPage<CProduct>{
         let { productLibrary, onProductSelected, filterByProductGenre, cApp } = this.controller;
         let { cGenre } = cApp;
         let siteHeader = this.renderVm(VSiteHeader);
-        let genreNone = <div className="py-1 pl-2 small text-secondary">暂无商品类型,请去新增类型 &rArr; 我的 &raquo;&raquo; 商品类型</div>
+        let genreNone = <div className="ml-4 pl-2 small text-secondary">暂无商品类型,请去新增类型 &rArr; 我的 &raquo;&raquo; 商品类型</div>
         return <>
             {siteHeader}
             <div className="border-bottom mb-1">
                 <div className="w-24c mt-1 mx-3 d-flex justify-content-between">
-                    <small className="mb-2">商品类型：{this.filterGenre}</small>
+                    <small className={classNames(cGenre.productGenres.length && 'mb-2')}>商品类型：{this.filterGenre}</small>
                     <span className={classNames(!this.filterGenre && 'd-none')} onClick={this.refreshProduct}>
                         <FA name="times-circle-o" className="text-danger" />
                     </span>

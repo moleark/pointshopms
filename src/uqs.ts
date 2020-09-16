@@ -56,6 +56,8 @@ export interface UqPointShop {
     PointProductHotStat: Book;
     SetPointProductVisits: Action;
     GetPointProductGenre: Query;
+    PointProductVisitHistory: History;
+    GetHotPointProducts: Query;
 }
 
 export interface UQs {

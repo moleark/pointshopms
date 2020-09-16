@@ -54,10 +54,11 @@ export class CPointShopMsApp extends CUqApp {
         this.cReport = this.newC(CReport);
         this.topKey = nav.topKey();
 
-        this.cReport.openPointsDist();
+        // this.cLottery.openLotteryProduct();
+        // this.cReport.openPointsDist();
         // this.cReport.openProductViews();
-
-        // this.showMain();
+        // this.cProduct.openCreationProduct();
+        this.showMain();
     }
 
     showMain(initTabName?: string) {

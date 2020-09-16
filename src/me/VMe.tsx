@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { EditMeInfo } from './EditMeInfo';
 import { CMe } from './CMe';
 import { appConfig } from 'configuration';
-
+const UnderDevelopment = <div className="text-danger ml-1">( 正在开发中... )</div>;
 export class VMe extends VPage<CMe> {
 
     async open(param?: any) {
@@ -25,19 +25,22 @@ export class VMe extends VPage<CMe> {
     }
 
     private openLottery = async () => {
-        await this.controller.openLottery();
+        let { cApp } = this.controller;
+        let { cLottery } = cApp;
+        // await cLottery.openLotteryProduct();
+        // await this.controller.openLottery();
     }
 
     private openProductViews = async () => {
         let { cApp } = this.controller;
         let { cReport } = cApp;
-        await cReport.openProductViews();
+        // await cReport.openProductViews();
     }
 
     private openPointsDist = async () => {
         let { cApp } = this.controller;
         let { cReport } = cApp;
-        await cReport.openPointsDist();
+        // await cReport.openPointsDist();
     }
 
     private meInfo = observer(() => {
@@ -108,18 +111,18 @@ export class VMe extends VPage<CMe> {
                 },
                 {
                     type: 'component',
-                    component: <IconText iconClass="text-info mr-2" icon="life-ring" text="抽奖商品" />,
+                    component: <><IconText iconClass="text-info mr-2" icon="life-ring" text="抽奖商品" />{UnderDevelopment}</>,
                     onClick: this.openLottery
                 },
                 '',
                 {
                     type: 'component',
-                    component: <IconText iconClass="text-info mr-2" icon="eye" text="商品浏览量" />,
+                    component: <><IconText iconClass="text-info mr-2" icon="eye" text="浏览量PV" />{UnderDevelopment}</>,
                     onClick: this.openProductViews
                 },
                 {
                     type: 'component',
-                    component: <IconText iconClass="text-info mr-2" icon="cubes" text="客户积分分布" />,
+                    component: <><IconText iconClass="text-info mr-2" icon="cubes" text="积分分布" />{UnderDevelopment}</>,
                     onClick: this.openPointsDist
                 },
                 '',
@@ -131,9 +134,9 @@ export class VMe extends VPage<CMe> {
             ]
             rows.push(...aboutRows, ...logOutRows);
         }
-        return <Page header="我的">
+        return <>
             <PropGrid rows={[...rows]} values={{}} />
-        </Page>
+        </>
     }
 }
 

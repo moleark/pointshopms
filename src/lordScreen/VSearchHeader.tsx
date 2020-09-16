@@ -34,9 +34,9 @@ export class VBrowseProductSearchHeader extends VSearchHeader {
     placeholder: string = '搜索商品';
 }
 
-export function searchKeyShow(searchKey: string, action: any) {// close remove times-circle  times-circle-o
-    return <div className="bg-white d-flex justify-content-between py-1 px-3 border-bottom">
+export function searchKeyShow(searchKey: string, action: any) {
+    return searchKey ? <div className="bg-white d-flex justify-content-between py-1 px-3 border-bottom">
         <span><small className="small text-muted">搜索: </small>{searchKey}</span>
         <span onClick={action}><FA name="times-circle-o" className="text-danger" /></span>
-    </div>
+    </div> : null;
 }

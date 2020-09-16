@@ -3,9 +3,8 @@ import { jnkTop } from "./me/loginTop";
 import { tvs } from "tvs";
 
 export const appConfig: AppConfig = {
-    // appName: "百灵威系统工程部/customer-service",
     appName: '百灵威系统工程部/pointshopms',
-    version: '0.1.0',
+    version: '1.0.0',
     tvs: tvs,
     loginTop: jnkTop,
     oem: '百灵威',

@@ -91,7 +91,7 @@ export class VProductOperation extends VPage<CProduct>{
     }
 
     private page = observer(() => {
-        let { EDIT, UPSHELF, DOWNSHELF } = OperationAdapt;
+        let { EDIT, UPSHELF, DOWNSHELF, REUPSHELF } = OperationAdapt;
         let { toGenreSelect, openVUpdatePicture, toProductUpShelf, isCreationProduct, goalProductInfo } = this.controller;
         let { genreShow, imageUrl, point, startDate, endDate, description, descriptionC, grade, radioy, unit } = goalProductInfo;
         grade = grade !== undefined ? grade : (radioy && unit ? `${radioy}${unit}` : undefined);
@@ -108,7 +108,7 @@ export class VProductOperation extends VPage<CProduct>{
                         {this.operateButtonUI(EDIT.name, EDIT.type)}
                         {
                             toProductUpShelf
-                                ? this.operateButtonUI(UPSHELF.name, UPSHELF.type)
+                                ? this.operateButtonUI(REUPSHELF.name, REUPSHELF.type)
                                 : this.operateButtonUI(DOWNSHELF.name, DOWNSHELF.type)
                         }
                     </>
