@@ -119,6 +119,7 @@ export class CProduct extends CUqBase {
      */
     onProductSelected = async (currentProduct: any, productOrigin?: any) => {
         let { id, descriptionC } = currentProduct;
+        let productGenre = undefined;
         /* 商品帖文 */
         /* this.htmlFragment = '';
         if (!product) {
@@ -131,12 +132,15 @@ export class CProduct extends CUqBase {
             let isExchangeProduct: any[] = await this.searchByKey(descriptionC.slice(0, 20));
             if (isExchangeProduct.length) {
                 for (let key of isExchangeProduct) {
-                    if (key.descriptionC === descriptionC)
+                    if (key.descriptionC === descriptionC) {
                         getProductCompleteInfo = await this.getPointProductLibLoad(key.id);
+                        productGenre = await this.getProductGenre(getProductCompleteInfo);
+                    }
                 }
             }
         } else {
             getProductCompleteInfo = await this.getPointProductLibLoad(id);
+            productGenre = await this.getProductGenre(currentProduct);
         }
         let { genre, genreShow } = this.goalProductInfo;
         /* genreShow 保持状态或初始化  */
@@ -147,7 +151,7 @@ export class CProduct extends CUqBase {
         this.toProductUpShelf = true;/* 显示上架 */
         if (!this.isCreationProduct && momentFormat() <= getProductCompleteInfo.endDate) this.toProductUpShelf = false; /* 显示下架 */
         /* 商品是否有类型 */
-        let productGenre = await this.getProductGenre(productOrigin !== undefined ? getProductCompleteInfo : currentProduct);
+        // let productGenre = await this.getProductGenre(productOrigin !== undefined ? getProductCompleteInfo : currentProduct);
         // if (!this.isCreationProduct) productGenre = await this.getProductGenre(currentProduct);
         /* 商品信息 */
         // let result = this.isCreationProduct ? { ...(product ? { ...product.obj, sourceId: id.id } : {}), radiox, radioy, unit, grade: `${radioy}${unit}` } : getProductCompleteInfo;
