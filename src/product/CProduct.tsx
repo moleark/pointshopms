@@ -128,7 +128,7 @@ export class CProduct extends CUqBase {
         /* 获取商品完整信息 */
         let getProductCompleteInfo = undefined;
         if (productOrigin !== undefined) {
-            let isExchangeProduct: any[] = await this.searchByKey(descriptionC.slice(0, 45));
+            let isExchangeProduct: any[] = await this.searchByKey(descriptionC.slice(0, 20));
             if (isExchangeProduct.length) {
                 for (let key of isExchangeProduct) {
                     if (key.descriptionC === descriptionC)
@@ -307,7 +307,7 @@ export class CProduct extends CUqBase {
         // await this.addPointProductDetailPost(productInfo);
         productInfo.id = undefined;
         await this.savePointProduct(productInfo);
-        let isExchangeProduct: any[] = await this.searchByKey(productInfo.descriptionC.slice(0, 45));
+        let isExchangeProduct: any[] = await this.searchByKey(productInfo.descriptionC.slice(0, 20));
         let res;
         for (let key of isExchangeProduct) {
             if (key.descriptionC === productInfo.descriptionC)
