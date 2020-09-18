@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VPage, Page, List, FA, LMR, Scroller } from 'tonva';
+import { VPage, Page, List, FA, LMR, Scroller, Form } from 'tonva';
 import { CProduct, ProductSources } from 'product/CProduct';
 import { PointProductImage } from 'tools/productImage';
 import { observer } from 'mobx-react';
@@ -26,6 +26,22 @@ export class VCreationProduct extends VPage<CProduct>{
                 <div className="my-2">{radioy}{unit}</div>
             </div>
         </div>
+    }
+
+    private ProductSelected = async (pointProduct: any) => {
+        let { onProductSelected } = this.controller;
+        let { description, descriptionC, radioy, unit, product, id } = pointProduct;
+        let pointProductInfo = {
+            description,
+            descriptionC,
+            grade: `${radioy}${unit}`,
+            id: undefined,
+            imageUrl: product.obj.imageUrl,
+            point: undefined,
+            sourceId: id.id,
+            isValid: 1
+        }
+        await onProductSelected(pointProductInfo, '新增')
     }
 
     private renderDataSources = (dataSource: any) => {
@@ -74,11 +90,14 @@ export class VCreationProduct extends VPage<CProduct>{
                     <List items={ProductSources} item={{ render: this.renderDataSources1, onClick: (v: any) => { this.currentProductSource = v.id; this.selectSource(v) } }} className="d-flex bg-white w-100 flex-wrap" none="暂无商品源" />
                 </div>
                 <LMR right={right}>
-                    <input ref={v => this.genreInput = v} type="text" placeholder="请输入商品名称" className="form-control"></input>
+                    <form onSubmit={(e) => { e.preventDefault(); this.searchProduct() }} >
+                        <input ref={v => this.genreInput = v} type="text" placeholder="请输入商品名称" className="form-control"></input>
+                    </form>
                 </LMR>
                 {this.searchIsBlank ? <div className="text-danger mt-1 small">{`${!this.genreInput.value ? '请输入查询名称' : !this.selectedProductSource ? '请选择商品源' : ''}`}</div> : null}
             </div>
-            <List items={searchProductsToCreation} item={{ render: this.renderPointProduct, onClick: onProductSelected }} none={noProductNone} />
+            <List items={searchProductsToCreation !== undefined ? searchProductsToCreation : []}
+                item={{ render: this.renderPointProduct, onClick: this.ProductSelected }} none={noProductNone} />
         </Page>
     })
 }

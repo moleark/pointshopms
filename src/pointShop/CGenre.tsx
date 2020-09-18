@@ -59,8 +59,10 @@ export class CGenre extends CUqBase {
      * 删除商品类型
      */
     delGenre = async (currentGenre: any) => {
-        let index = this.productGenres.findIndex(v => v.genre === currentGenre.genre);
-        this.productGenres.splice(index, 1);
+        await this.uqs.积分商城.PointProductGenreDelete.submit({ genre: currentGenre });
+        await this.getProductGenres();
+        /* let index = this.productGenres.findIndex(v => v.genre === currentGenre.genre);
+        this.productGenres.splice(index, 1); */
     }
 
     /**

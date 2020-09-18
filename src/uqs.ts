@@ -48,11 +48,13 @@ export interface UqPointShop {
     getPoints: Query;
     Genre: Tuid;
     PointProductGenre: Map;
+    PointProductGenreDelete: Action;
     PointExchangeSheet: Sheet;
     GetPointProduct: Query;
     PointProduct: Map;
     PointProductLib: Tuid;
     PointProductSource: Map;
+    PointProductDetail: Map;
     PointProductHotStat: Book;
     SetPointProductVisits: Action;
     GetPointProductGenre: Query;

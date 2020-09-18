@@ -51,7 +51,7 @@ export class VProductGenre extends VPage<CGenre> {
     private renderItemGenre = (currentGenre: any) => {
         let right = <div className="d-flex pt-2 px-2 cursor-pointer text-info">
             {this.genreActionIcon('edit', this.editGenre, currentGenre)}
-            {/* {this.genreActionIcon('trash', this.delGenre, currentGenre)} */}
+            {this.genreActionIcon('trash', this.delGenre, currentGenre)}
         </div>
         return <LMR right={right}>
             <div className="pt-2 px-2">
@@ -68,7 +68,9 @@ export class VProductGenre extends VPage<CGenre> {
         return <Page header="商品类型">
             <div className="px-2 py-3">
                 <LMR right={right}>
-                    <input ref={v => this.genreInput = v} type="text" placeholder="输入创建的商品类型" className="form-control"></input>
+                    <form onSubmit={(e) => { e.preventDefault(); this.creationGenre() }} >
+                        <input ref={v => this.genreInput = v} type="text" placeholder="输入创建的商品类型" className="form-control"></input>
+                    </form>
                 </LMR>
                 {creationGenreTipUI}
                 <List items={productGenres} item={{ render: this.renderItemGenre, onClick: onGenreSelected, }} none={none} className="mt-2" />
