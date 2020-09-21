@@ -10,6 +10,8 @@ import { tv, QueryPager } from 'tonva';
 import { momentFormat } from 'tools/momentFormat';
 import { VCreationProduct } from './VCreationProduct';
 import { VPointProductPost } from './VPointProductPost';
+import { GLOABLE } from '../configuration';
+import { VPointProductPostShow } from './VPointProductPostShow';
 export const ProductSources = [
     { id: 1, source: '本司', sourceId: 1, type: 'selfsales' },
     { id: 2, source: '京东', sourceId: 2, type: 'jd.com' },
@@ -30,10 +32,14 @@ export class CProduct extends CUqBase {
     @observable isSelectedGenre: boolean = false;             /* 商品类型是否选择 */
     @observable toProductUpShelf: boolean;                    /* 是否上架or下架 */
     @observable isCreationProduct: boolean;                   /* 是否新增商品 */
-    @observable htmlFragment: string = '';                    /* 商品帖文 */
+    @observable htmlFragment: string = '';                    /* 商品帖文预览内容 */
+    @observable postType: string = '';                        /* 商品帖文类型 */
+    @observable currentProduct: any;                          /* 当前编辑帖文商品 */
+    @observable currentPostContent: string = '';              /* 当前帖文内容 */
 
     protected async internalStart(param?: any) {
         let searchProduct = await this.searchByKey(param);
+        searchProduct = await this.isPosTExist(searchProduct);
         this.currentSource = ProductSources[0]
         this.closePage();
         this.openVPage(VSearchProduct, { searchKey: param, searchProduct });
@@ -65,9 +71,21 @@ export class CProduct extends CUqBase {
     /**
      * 帖文页面
      */
-    openPointProductPost = async (type?: string) => {
-        // if (type)
-        this.openVPage(VPointProductPost, type);
+    openPointProductPost = async (pointProduct: any, type?: string) => {
+        this.postType = type;
+        this.currentProduct = pointProduct;
+        if (this.postType === '编辑')
+            this.currentPostContent = await this.getPointProductDetailPost(pointProduct);
+        else this.currentPostContent = undefined;
+        this.openVPage(VPointProductPost);
+    }
+
+    /**
+     * 帖文预览页面
+     */
+    openPointProductPostShow = async () => {
+        this.htmlFragment = await this.getPointProductDetailPostHtml(this.currentProduct);
+        this.openVPage(VPointProductPostShow);
     }
 
     /**
@@ -118,14 +136,12 @@ export class CProduct extends CUqBase {
      * 选择商品  -------------------逻辑问题
      */
     onProductSelected = async (currentProduct: any, productOrigin?: any) => {
-        let { id, descriptionC } = currentProduct;
-        let productGenre = undefined;
-        /* 商品帖文 */
-        /* this.htmlFragment = '';
-        if (!product) {
-            let findPointProductPost = await this.getPointProductDetailPost(currentProduct);
-            if (findPointProductPost !== undefined) this.htmlFragment = findPointProductPost.content;
+        let { id, descriptionC, sourceId } = currentProduct;
+        /* if (sourceId) {
+            console.log(await this.uqs.积分商城.PointProductSource.table({ pointProduct: id, sourceId: sourceId }));
+
         } */
+        let productGenre = undefined;
         /* 获取商品完整信息 */
         let getProductCompleteInfo = undefined;
         if (productOrigin !== undefined) {
@@ -221,21 +237,58 @@ export class CProduct extends CUqBase {
         return await this.uqs.积分商城.PointProductLib.load(id);
     }
 
-    /**
+    /*
      * 获取商品帖文
      */
     getPointProductDetailPost = async (pointProduct: any) => {
-        return await this.uqs.积分商城.PointProductDetail.obj({ pointProduct });
-        // { pointProduct: ReactBoxId, content: "test", $id: 1 }
+        let findPostContent = await this.uqs.积分商城.PointProductDetail.obj({ pointProduct });
+        return findPostContent !== undefined ? findPostContent.content : undefined;
     }
+
+    /**
+     * 获取商品帖文预览内容(编译后)
+     */
+    getPointProductDetailPostHtml = async (pointProduct: any) => {
+        let result = await window.fetch(GLOABLE.CONTENTSITE + '/partial/pointproductdetail/' + pointProduct.id);
+        if (result.ok) {
+            let content = await result.text();
+            return content;
+        }
+    }
+
+    /**
+     * 保存帖文
+     */
+    onSavePointProductPost = async (content: any) => {
+        this.currentProduct.content = content;
+        await this.addPointProductDetailPost(this.currentProduct);
+        this.closePage();
+    }
+
+    /**
+     * 处理列表数据是否有帖文
+     */
+    isPosTExist = async (pointProduct: any) => {
+        let shiftArr = [];
+        if (pointProduct.length) {
+            for (let key of pointProduct) {
+                let as = await this.getPointProductDetailPost(key)
+                shiftArr.push({ ...key, isPosTExist: as !== undefined ? true : false });
+            }
+        }
+        return shiftArr;
+    }
+
     /**
      * 添加商品帖文
      */
     addPointProductDetailPost = async (pointProduct: any) => {
-        await this.uqs.积分商城.PointProductDetail.add({ pointProduct, content: this.htmlFragment });
+        let { content } = pointProduct;
+        await this.uqs.积分商城.PointProductDetail.add({ pointProduct, content });
     }
+
     /**
-     * 删除商品帖文
+     * 删除商品帖文(存在问题，弃用)
      */
     delPointProductDetailPost = async (pointProduct: any) => {
         await this.uqs.积分商城.PointProductDetail.del({ arr1: [{ pointProduct: pointProduct.id }] });
@@ -271,18 +324,13 @@ export class CProduct extends CUqBase {
     }
 
     /**
-     * 修改商品 -------------------------帖文
+     * 修改商品
      */
     editProduct = async (productInfo: any) => {
-        // await this.addPointProductDetailPost(productInfo);
         let { point, imageUrl, genre, startDate, endDate, id } = productInfo;
-        let productGenreFind = await this.getProductGenre(productInfo);
         let pointProductFind = await this.getPointProductLibLoad(id);
         let { point: pfPoint, imageUrl: pfImageUrl, startDate: pfStartDate, endDate: pfEndDate } = pointProductFind;
-        /* 商品类型  不存在 增类型 存在且不同 先删再增 */
-        await this.addProductGenre(productInfo);
-        if (productGenreFind !== undefined && genre.id !== productGenreFind.genre.id)
-            await this.delProductGenre(productGenreFind);
+        await this.dealWithProductGenre(productInfo);
         /* 商品信息  积分、图片、上下架日期 任意不同去更新  */
         pfStartDate = momentFormat(pfStartDate);
         pfEndDate = momentFormat(pfEndDate);
@@ -292,23 +340,31 @@ export class CProduct extends CUqBase {
     }
 
     /**
+     * 处理商品类型(公共代码)
+     */
+    dealWithProductGenre = async (productInfo: any) => {
+        let { genre } = productInfo;
+        if (genre !== undefined) {
+            /* 商品类型  不存在 增类型 存在且不同 先删再增 */
+            let productGenreFind = await this.getProductGenre(productInfo);
+            await this.addProductGenre(productInfo);
+            if (productGenreFind !== undefined && genre.id !== productGenreFind.genre.id)
+                await this.delProductGenre(productGenreFind);
+        }
+    }
+
+    /**
      * 重新上架
      */
     reUpShelfProduct = async (productInfo: any) => {
-        let { genre } = productInfo;
-        let productGenreFind = await this.getProductGenre(productInfo);
-        if (productGenreFind !== undefined && genre.id !== productGenreFind.genre.id) {
-            await this.delProductGenre(productGenreFind);
-            await this.addProductGenre(productInfo);
-        }
+        await this.dealWithProductGenre(productInfo);
         await this.savePointProduct(productInfo);
     }
 
     /**
-     * 商品上架  (纯粹的上架,上架前所有的商品皆无类型)  -------------------------帖文
+     * 商品上架  (纯粹的上架,上架前所有的商品皆无类型)
      */
     upShelfProduct = async (productInfo: any) => {
-        // await this.addPointProductDetailPost(productInfo);
         productInfo.id = undefined;
         await this.savePointProduct(productInfo);
         let isExchangeProduct: any[] = await this.searchByKey(productInfo.descriptionC.slice(0, 20));
@@ -318,7 +374,7 @@ export class CProduct extends CUqBase {
                 res = await this.getPointProductLibLoad(key.id);
         }
         productInfo.id = res.id;
-        await this.addProductGenre(productInfo);
+        if (productInfo.genre !== undefined) await this.addProductGenre(productInfo);
         /* 新增商品添加数据源 */
         let resSource = await this.getProductSources(productInfo);
         if (resSource === undefined)
@@ -345,7 +401,7 @@ export class CProduct extends CUqBase {
      * 获取商品源
      */
     getProductSources = async (pointProduct: any) => {
-        return await this.uqs.积分商城.PointProductSource.obj({ pointProduct, sourceId: undefined });
+        return await this.uqs.积分商城.PointProductSource.obj({ pointProduct, sourceId: pointProduct.sourceId });
     }
 
     /**

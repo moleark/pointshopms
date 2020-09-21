@@ -15,7 +15,11 @@ export interface UqProduct {
     GetFutureDeliveryTime: Query;
     SearchPointProduct: Query;
 }
-
+export interface UqHr {
+    employee: Tuid;
+    SearchEmployeeByid: Query;
+    SearchTeam: Query;
+}
 export interface UqCommon {
     SalesRegion: Tuid;
     Language: Tuid;
@@ -41,7 +45,17 @@ export interface UqWebUser {
     SearchHavingRefuseUser: Query;
 }
 
-
+export interface WebBuilder {
+    Image: Tuid;
+    SearchImage: Query;
+    ImageCat: Map;
+    SearchImageCat: Query;
+    SearchCatImage: Query;
+    SearchCat: Query;
+    UpdateSlideShow: Action;
+    DeleteSlideShow: Action;
+    SearchSlideShow: Query;
+}
 
 export interface UqPointShop {
     PointBook: Book;
@@ -63,8 +77,10 @@ export interface UqPointShop {
 }
 
 export interface UQs {
+    hr: UqHr;
     product: UqProduct;
     common: UqCommon;
     webuser: UqWebUser;
+    webBuilder: WebBuilder;
     积分商城: UqPointShop;
 }

@@ -28,6 +28,10 @@ export class VProduct extends VPage<CProduct>{
         await getProductLibrary();
     }
 
+    renderPointProductPost = (pointProduct: any) => {
+        return null;
+    }
+
     protected renderPointProduct = (pointProduct: any) => {
         let { description, descriptionC, imageUrl, point, grade } = pointProduct;
         return <div className="row m-1 w-100">
@@ -41,6 +45,7 @@ export class VProduct extends VPage<CProduct>{
                         <small>分</small>
                     </div>
                 </div>
+                {this.renderPointProductPost(pointProduct)}
             </div>
         </div>
     }
@@ -99,10 +104,26 @@ export class VSearchProduct extends VProduct {
         this.openPage(this.page);
     }
 
+    renderPointProductPost = (pointProduct: any) => {
+        let { openPointProductPost } = this.controller;
+        let { isPosTExist } = pointProduct;
+        return <div className="d-flex justify-content-end mx-2" onClick={(e) => { e.stopPropagation(); openPointProductPost(pointProduct, isPosTExist ? '编辑' : '创建') }}>
+            <div>帖文</div>
+            <div>
+                {
+                    isPosTExist
+                        ? <span><FA name="edit" size="lg" className="mx-2 text-primary" /></span>
+                        : <span><FA name="plus-circle" size="lg" className="mx-2 text-success" /></span>
+                }
+            </div>
+        </div>
+    }
+
+
     refreshProduct = async () => {
-        let { productLibrary } = this.controller;
+        let { productLibrary, isPosTExist } = this.controller;
         this.searchKey = undefined;
-        this.searchProductLibrary = productLibrary;
+        this.searchProductLibrary = await isPosTExist(productLibrary);
     }
 
     page = observer(() => {

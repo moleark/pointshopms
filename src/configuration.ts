@@ -15,6 +15,7 @@ const GLOABLE_PRODUCTION = {
     CHINESE: 196,
     SALESREGION_CN: 1,
     TIPDISPLAYTIME: 3000,
+    CONTENTSITE: "https://web.jkchemical.com",
 }
 
 const GLOABLE_TEST = {
@@ -22,6 +23,15 @@ const GLOABLE_TEST = {
     CHINESE: 197,
     SALESREGION_CN: 4,
     TIPDISPLAYTIME: 3000,
+    CONTENTSITE: "https://c.jkchemical.com/jk-web",
 }
+
+// 生产配置
+export const MadiaType = {
+    IAMGE: 1,
+    PDF: 2,
+    VIDEO: 3,
+    NOTIMAGE: 0
+};
 
 export const GLOABLE = env.testing === true ? GLOABLE_TEST : GLOABLE_PRODUCTION;

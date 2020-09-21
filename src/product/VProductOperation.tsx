@@ -35,12 +35,12 @@ export class VProductOperation extends VPage<CProduct>{
 
     private onSaveOperating = async () => {
         if (!this.form) return;
-        let { isSelectedGenre } = this.controller;
+        /* let { isSelectedGenre } = this.controller;
         if (!isSelectedGenre && this.currentState !== OperationAdapt.DOWNSHELF.type) {
             this.productGenreIsBlank = true;
             setTimeout(() => this.productGenreIsBlank = false, GLOABLE.TIPDISPLAYTIME);
             return;
-        }
+        } */
         await this.form.buttonClick("submit");
     }
 
@@ -86,7 +86,7 @@ export class VProductOperation extends VPage<CProduct>{
 
     private page = observer(() => {
         let { EDIT, UPSHELF, DOWNSHELF, REUPSHELF } = OperationAdapt;
-        let { toGenreSelect, openVUpdatePicture, openPointProductPost, toProductUpShelf, isCreationProduct, goalProductInfo, htmlFragment } = this.controller;
+        let { toGenreSelect, openVUpdatePicture, toProductUpShelf, isCreationProduct, goalProductInfo } = this.controller;
         let { genreShow, imageUrl, point, startDate, endDate, description, descriptionC, grade, radioy, unit } = goalProductInfo;
         // grade = grade !== undefined ? grade : (radioy && unit ? `${radioy}${unit}` : undefined);
         startDate = startDate !== undefined ? momentFormat(startDate) : startDate;
@@ -138,23 +138,6 @@ export class VProductOperation extends VPage<CProduct>{
                         fieldLabelSize={3} />
                 </div>
             }
-            {/* 帖文 */}
-            {/* <div className="bg-light px-3 pt-2">
-                <div className="d-flex justify-content-between">
-                    <div>商品帖文</div>
-                    <div>
-                        {
-                            htmlFragment
-                                ? <span onClick={() => openPointProductPost('编辑')}><FA name="edit" className="mx-2 text-primary" /></span>
-                                : <span onClick={() => openPointProductPost('创建')}><FA name="plus-circle" className="mx-2 text-success" /></span>
-                        }
-                    </div>
-                </div>
-                {!htmlFragment ? <div className="py-4 d-flex justify-content-center text-secondary">『 暂无帖文 』</div> : null}
-
-                <div dangerouslySetInnerHTML={{ __html: htmlFragment ? htmlFragment : '' }} className="w-100"></div>
-            </div> */}
-
         </Page >
     })
 }

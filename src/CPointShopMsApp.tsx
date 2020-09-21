@@ -1,4 +1,4 @@
-import { nav, } from 'tonva';
+import { nav, UserCache, } from 'tonva';
 // import { UQs } from 'uqs';
 import { VMain } from 'VMain';
 import { CUqApp } from 'CBase'
@@ -11,6 +11,10 @@ import { CPointProduct } from 'pointShop/CPointProduct';
 import { CLottery } from 'pointShop/CLottery';
 import { CReport } from 'report/CReport';
 import { GLOABLE } from 'configuration';
+import { CMedia } from 'media/CMedia';
+import { res } from 'res';
+import { CPosts } from 'posts/CPosts';
+// import { CMedia } from 'media-ng-07/src';
 
 export class CPointShopMsApp extends CUqApp {
     // get uqs(): UQs { return this._uqs; }
@@ -26,7 +30,10 @@ export class CPointShopMsApp extends CUqApp {
     cPointProduct: CPointProduct;
     cLottery: CLottery;
     cReport: CReport;
+    cMedia: CMedia;
+    cPosts: CPosts;
 
+    private userCache: UserCache<any>;
     protected async internalStart() {
 
         let { uqs } = this;
@@ -38,6 +45,14 @@ export class CPointShopMsApp extends CUqApp {
         ]);
         this.currentSalesRegion = currentSalesRegion;
         this.currentLanguage = currentLanguage;
+
+        this.setRes(res);
+        let userLoader = async (userId: number): Promise<any> => {
+            let model = await this.uqs.hr.SearchEmployeeByid.query({ _id: userId });
+            return model?.ret?.[0];
+        }
+        this.userCache = new UserCache(userLoader);
+
 
         this.currentUser = new WebUser(this.uqs);
         if (this.isLogined) {
@@ -52,6 +67,8 @@ export class CPointShopMsApp extends CUqApp {
         await this.cGenre.getProductGenres();
         this.cLottery = this.newC(CLottery);
         this.cReport = this.newC(CReport);
+        this.cMedia = this.newC(CMedia);
+        this.cPosts = this.newC(CPosts);
         this.topKey = nav.topKey();
 
         // this.cLottery.openLotteryProduct();
@@ -63,5 +80,19 @@ export class CPointShopMsApp extends CUqApp {
 
     showMain(initTabName?: string) {
         this.openVPage(VMain, initTabName);
+    }
+
+    renderUser(userId: number) {
+        let val = this.userCache.getValue(userId);
+        switch (typeof val) {
+            case 'undefined':
+            case 'number':
+                return userId;
+        };
+        return val.name;
+    }
+
+    useUser(userId: number) {
+        this.userCache.use(userId);
     }
 }
