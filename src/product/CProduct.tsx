@@ -133,26 +133,18 @@ export class CProduct extends CUqBase {
     }
 
     /**
-     * 选择商品  -------------------逻辑问题
+     * 选择商品
      */
     onProductSelected = async (currentProduct: any, productOrigin?: any) => {
-        let { id, descriptionC, sourceId } = currentProduct;
-        /* if (sourceId) {
-            console.log(await this.uqs.积分商城.PointProductSource.table({ pointProduct: id, sourceId: sourceId }));
-
-        } */
+        let { id, descriptionC } = currentProduct;
         let productGenre = undefined;
         /* 获取商品完整信息 */
         let getProductCompleteInfo = undefined;
         if (productOrigin !== undefined) {
-            let isExchangeProduct: any[] = await this.searchByKey(descriptionC.slice(0, 20));
-            if (isExchangeProduct.length) {
-                for (let key of isExchangeProduct) {
-                    if (key.descriptionC === descriptionC) {
-                        getProductCompleteInfo = await this.getPointProductLibLoad(key.id);
-                        productGenre = await this.getProductGenre(getProductCompleteInfo);
-                    }
-                }
+            let isExchangeProduct = await this.getProductSources(currentProduct);
+            if (isExchangeProduct !== undefined) {
+                getProductCompleteInfo = await this.getPointProductLibLoad(isExchangeProduct.pointProduct.id);
+                productGenre = await this.getProductGenre(getProductCompleteInfo);
             }
         } else {
             getProductCompleteInfo = await this.getPointProductLibLoad(id);
@@ -367,7 +359,7 @@ export class CProduct extends CUqBase {
     upShelfProduct = async (productInfo: any) => {
         productInfo.id = undefined;
         await this.savePointProduct(productInfo);
-        let isExchangeProduct: any[] = await this.searchByKey(productInfo.descriptionC.slice(0, 20));
+        let isExchangeProduct: any[] = await this.searchByKey(productInfo.descriptionC.slice(0, 40));
         let res;
         for (let key of isExchangeProduct) {
             if (key.descriptionC === productInfo.descriptionC)
