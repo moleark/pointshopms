@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { VPage, Page, List, tv } from 'tonva';
+import { VPage, Page, List, tv, Scroller } from 'tonva';
 import { CReport } from './CReport';
 import { noProductNone } from 'product/VProduct';
 import { PointProductImage } from 'tools/productImage';
@@ -15,7 +15,7 @@ export class VProductViews extends VPage<CReport> {
     }
 
     protected renderPointProduct = (pointProduct: any) => {
-        let { imageUrl, point, visits, id } = pointProduct;
+        let { imageUrl, point, visits, id, exchanges } = pointProduct;
         return <>
             {tv(id, (v) => {
                 return <div className="row m-1 w-100">
@@ -28,7 +28,10 @@ export class VProductViews extends VPage<CReport> {
                                 <span className="text-danger h5">{point}</span><small>分</small>
                             </div>
                         </div>
-                        <div className="d-flex justify-content-end">浏览量：{visits}</div>
+                        <div className="d-flex justify-content-end align-items-end">
+                            <div className="mr-3">兑换量:<span className="h6 m-0 text-primary">{exchanges ? exchanges : 0}</span></div>
+                            <div>浏览量:<span className="h6 m-0 text-primary">{visits ? visits : 0}</span></div>
+                        </div>
                     </div>
                 </div>
             })}
@@ -44,6 +47,12 @@ export class VProductViews extends VPage<CReport> {
         await getBrowsedProductLib();
     }
 
+    private onScrollBottom = async (scroller: Scroller) => {
+        scroller.scrollToBottom();
+        let { browsedProductLib } = this.controller;
+        browsedProductLib.more();
+    }
+
     private page = observer(() => {
         let { browsedProductLib, cApp, renderSearchHeader, openPointProductVisitRecord } = this.controller;
         let header = <div className="w-100 pr-2 d-flex justify-content-between">
@@ -51,7 +60,7 @@ export class VProductViews extends VPage<CReport> {
             {/* <div className="w-50">{renderSearchHeader()}</div> */}
         </div>
 
-        return <Page header={header}>
+        return <Page header={header} onScrollBottom={this.onScrollBottom}>
             {/* {searchKeyShow(this.searchKey, this.refreshProduct)} */}
             <List items={browsedProductLib} item={{ render: this.renderPointProduct }} none={noProductNone} />
         </Page>

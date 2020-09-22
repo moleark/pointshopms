@@ -393,7 +393,9 @@ export class CProduct extends CUqBase {
      * 获取商品源
      */
     getProductSources = async (pointProduct: any) => {
-        return await this.uqs.积分商城.PointProductSource.obj({ pointProduct, sourceId: pointProduct.sourceId });
+        let type = this.currentSource.type === "selfsales" ? 'self' : this.currentSource.type;
+        // return await this.uqs.积分商城.PointProductSource.obj({ pointProduct, sourceId: pointProduct.sourceId });
+        return await this.uqs.积分商城.GetPointProductBySource.obj({ sourceId: pointProduct.sourceId, type });
     }
 
     /**

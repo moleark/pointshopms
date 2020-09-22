@@ -74,6 +74,10 @@ export interface UqPointShop {
     GetPointProductGenre: Query;
     PointProductVisitHistory: History;
     GetHotPointProducts: Query;
+    GetPointDistribution: Query;
+    GetMaxPoints: Query;
+    GetVisitPointProducts: Query;
+    GetPointProductBySource: Query;
 }
 
 export interface UQs {

@@ -4,6 +4,7 @@ import { VPointsDist, PointRangeLibForm } from './VPointsDist';
 import { observable } from 'mobx';
 import { VBrowseProductSearchHeader } from 'lordScreen/VSearchHeader';
 import { VPointProductVisitRecord } from './VPointProductVisitRecord';
+import { QueryPager } from 'tonva';
 
 const numLimit = [100, 1000, 10000, 100000, 1000000, 10000000];
 const changeConditionObj = {
@@ -12,7 +13,7 @@ const changeConditionObj = {
 }
 
 export class CReport extends CUqBase {
-    @observable browsedProductLib: any[] = [];         /* 已浏览的商品列表 */
+    @observable browsedProductLib: QueryPager<any>;         /* 已浏览的商品列表 */
     @observable pointProductVisitRecord: any;          /* 商品访问记录 */
 
 
@@ -71,14 +72,16 @@ export class CReport extends CUqBase {
      */
     searchKeyBrowseProduct = async (key: any) => {
         // await this.uqs.
-        this.browsedProductLib = [1];
+        // this.browsedProductLib = [1];
     }
 
     /**
      * 获取已浏览的商品列表 
      */
-    getBrowsedProductLib = async () => {
-        this.browsedProductLib = await this.uqs.积分商城.GetHotPointProducts.table({});
+    getBrowsedProductLib = async () => {//QueryPager<any>;
+        // this.browsedProductLib = await this.uqs.积分商城.GetHotPointProducts.table({});
+        this.browsedProductLib = new QueryPager(this.uqs.积分商城.GetVisitPointProducts, 15, 30);
+        this.browsedProductLib.first({});
     }
 
     /**
@@ -92,8 +95,9 @@ export class CReport extends CUqBase {
      * 获取最大的客户积分
      */
     private getMaxPoint = async () => {
-        // this.maxPoint=  await this.uqs.积分商城
-        this.maxPoint = 50000000;//810000000 
+        let result = await this.uqs.积分商城.GetMaxPoints.obj({});
+        this.maxPoint = result !== undefined ? result.maxPoints : 10000
+        // this.maxPoint = 260000;
     }
 
     /**
@@ -153,7 +157,8 @@ export class CReport extends CUqBase {
                 if (finalValue === '1亿') this.maxPointRange = this.maxPointValue;
                 else {
                     let result = this.changeTextUnits(finalValue, 'toNum');
-                    this.maxPointRange = this.changeTextUnits((+result[0] + 1) + result.slice(1), 'toText');
+                    this.maxPointRange = this.changeTextUnits((+result) + addVal, 'toText');
+                    // this.maxPointRange = this.changeTextUnits((+result[0] + 1) + result.slice(1), 'toText');
                 }
                 shiftArr.push({ value: `${finalValue}-${this.maxPointRange}`, title: `${finalValue}以上` });/* 指定value 不需处理 */
             }
@@ -185,15 +190,21 @@ export class CReport extends CUqBase {
         let granularity = numLimit.find(v => interVal <= v);    /* 数值区间 */
         let shiftArr = [];
         /* 生成相应区间的客户人数数据 */  //可在外部调用一次请求,获取数据数组,在循环内获取对应的数据
-        for (let i = start; i <= end; i += granularity) {
+        let getDists: any[] = await this.getUsersDistOfPointInterval({ start, end, granularity });
+        for (let key of getDists) {
+            let pointRange = `${this.changeTextUnits(key.subStart, 'toText')}-${this.changeTextUnits(key.subEnd, 'toText')}`;
+            shiftArr.push({ pointRange, QTYP: key.numbers });
+        }
+        this.pointRangeLib = shiftArr;
+        /* for (let i = start; i <= end; i += granularity) {
             if (i !== start) {
                 let pointRange = `${this.changeTextUnits(i - granularity, 'toText')}-${this.changeTextUnits(i, 'toText')}`;
                 let param = { startPoint: i - granularity, endPoint: i };
-                let QTYP = await this.getUsersDistOfPointInterval(param);
-                shiftArr.push({ pointRange, QTYP });
+                // let QTYP = await this.getUsersDistOfPointInterval(param);
+                shiftArr.push({ pointRange, QTYP: 50 });
             }
         }
-        this.pointRangeLib = shiftArr;
+        this.pointRangeLib = shiftArr; */
         // console.log(shiftArr);
     }
 
@@ -201,8 +212,9 @@ export class CReport extends CUqBase {
      * 获取指定积分区间的客户分布数
      */
     getUsersDistOfPointInterval = async (pointRange: any) => {
-        // return this.uqs.积分商城
-        return Math.floor(Math.random() * 200);
+        let { start, end, granularity } = pointRange;
+        return this.uqs.积分商城.GetPointDistribution.table({ start, end, granularity })
+        // return Math.floor(Math.random() * 200);
     }
 
     /**

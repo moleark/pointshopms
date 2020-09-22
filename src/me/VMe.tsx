@@ -34,13 +34,13 @@ export class VMe extends VPage<CMe> {
     private openProductViews = async () => {
         let { cApp } = this.controller;
         let { cReport } = cApp;
-        // await cReport.openProductViews();
+        await cReport.openProductViews();
     }
 
     private openPointsDist = async () => {
         let { cApp } = this.controller;
         let { cReport } = cApp;
-        // await cReport.openPointsDist();
+        await cReport.openPointsDist();
     }
 
     private meInfo = observer(() => {
@@ -117,12 +117,12 @@ export class VMe extends VPage<CMe> {
                 '',
                 {
                     type: 'component',
-                    component: <><IconText iconClass="text-info mr-2" icon="eye" text="浏览量PV" />{UnderDevelopment}</>,
+                    component: <><IconText iconClass="text-info mr-2" icon="eye" text="浏览量PV" /></>,
                     onClick: this.openProductViews
                 },
                 {
                     type: 'component',
-                    component: <><IconText iconClass="text-info mr-2" icon="cubes" text="积分分布" />{UnderDevelopment}</>,
+                    component: <><IconText iconClass="text-info mr-2" icon="cubes" text="积分分布" /></>,
                     onClick: this.openPointsDist
                 },
                 '',
