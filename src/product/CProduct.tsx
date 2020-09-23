@@ -443,9 +443,10 @@ export class CProduct extends CUqBase {
         let filterPointProducts = [];
         if (pointProductFromGenre.length) {
             for (let key of pointProductFromGenre) {
-                let searchpointProductByKey = await this.getPointProductLibLoad(key.pointProduct.id)
+                let searchpointProductByKey = await this.getPointProductLibLoad(key.pointProduct.id);
+                let as = await this.getPointProductDetailPost(key.pointProduct.id);
                 if (searchpointProductByKey !== undefined)
-                    filterPointProducts.push(searchpointProductByKey);
+                    filterPointProducts.push({ ...searchpointProductByKey, isPosTExist: as !== undefined ? true : false });
             }
         }
         this.productLibrary = filterPointProducts;
