@@ -27,6 +27,7 @@ export const OperationAdapt = {
 export class CProduct extends CUqBase {
     @observable goalProductInfo: any = {};        /* 商品信息 */
     @observable productLibrary: any[] = [];       /* 商品库 */
+    @observable searchProductLibrary: any[] = []; /* 查询商品 */
     @observable currentSource: any;               /* 当前商品源 */
     @observable searchProductsToCreation: QueryPager<any>;    /* 新增商品时所查询的列表 */
     @observable isSelectedGenre: boolean = false;             /* 商品类型是否选择 */
@@ -40,6 +41,7 @@ export class CProduct extends CUqBase {
     protected async internalStart(param?: any) {
         let searchProduct = await this.searchByKey(param);
         searchProduct = await this.isPosTExist(searchProduct);
+        this.searchProductLibrary = searchProduct;
         this.currentSource = ProductSources[0]
         this.closePage();
         this.openVPage(VSearchProduct, { searchKey: param, searchProduct });
@@ -253,7 +255,13 @@ export class CProduct extends CUqBase {
      */
     onSavePointProductPost = async (content: any) => {
         this.currentProduct.content = content;
+        for (let key in this.searchProductLibrary) {
+            if (this.searchProductLibrary[key].id === this.currentProduct.id) {
+                this.searchProductLibrary[key].isPosTExist = true;
+            }
+        }
         await this.addPointProductDetailPost(this.currentProduct);
+
         this.closePage();
     }
 

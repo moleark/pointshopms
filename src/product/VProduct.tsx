@@ -123,15 +123,16 @@ export class VSearchProduct extends VProduct {
     refreshProduct = async () => {
         let { productLibrary, isPosTExist } = this.controller;
         this.searchKey = undefined;
-        this.searchProductLibrary = await isPosTExist(productLibrary);
+        // this.searchProductLibrary = await isPosTExist(productLibrary);
+        this.controller.searchProductLibrary = await isPosTExist(productLibrary);
     }
 
     page = observer(() => {
-        let { onProductSelected, renderSearchHeader } = this.controller;
+        let { onProductSelected, renderSearchHeader, searchProductLibrary } = this.controller;
         let header = <div className="mx-1 mr-3 w-100">{renderSearchHeader()}</div>;
         return <Page header={header}>
             {this.searchKey && searchKeyShow(this.searchKey, this.refreshProduct)}
-            <List items={this.searchProductLibrary} item={{ render: this.renderPointProduct, onClick: onProductSelected }} none={noProductNone} />
+            <List items={searchProductLibrary} item={{ render: this.renderPointProduct, onClick: onProductSelected }} none={noProductNone} />
         </Page>
     })
 }
