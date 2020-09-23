@@ -28,6 +28,7 @@ export class CProduct extends CUqBase {
     @observable goalProductInfo: any = {};        /* 商品信息 */
     @observable productLibrary: any[] = [];       /* 商品库 */
     @observable searchProductLibrary: any[] = []; /* 查询商品 */
+    @observable postSource: any;                  /* 帖文操作来源 */
     @observable currentSource: any;               /* 当前商品源 */
     @observable searchProductsToCreation: QueryPager<any>;    /* 新增商品时所查询的列表 */
     @observable isSelectedGenre: boolean = false;             /* 商品类型是否选择 */
@@ -73,8 +74,9 @@ export class CProduct extends CUqBase {
     /**
      * 帖文页面
      */
-    openPointProductPost = async (pointProduct: any, type?: string) => {
+    openPointProductPost = async (pointProduct: any, type: string, postSource: string) => {
         this.postType = type;
+        this.postSource = postSource;
         this.currentProduct = pointProduct;
         if (this.postType === '编辑')
             this.currentPostContent = await this.getPointProductDetailPost(pointProduct);
@@ -206,7 +208,9 @@ export class CProduct extends CUqBase {
      * 获取商品库
      */
     getProductLibrary = async () => {
-        this.productLibrary = await this.uqs.积分商城.PointProductLib.all();
+        // this.productLibrary = await this.uqs.积分商城.PointProductLib.all();
+        let res = await this.uqs.积分商城.PointProductLib.all();
+        this.productLibrary = await this.isPosTExist(res);
         // this.productLibrary = await this.getFurtherReq(result);
     }
 
@@ -255,13 +259,20 @@ export class CProduct extends CUqBase {
      */
     onSavePointProductPost = async (content: any) => {
         this.currentProduct.content = content;
-        for (let key in this.searchProductLibrary) {
-            if (this.searchProductLibrary[key].id === this.currentProduct.id) {
-                this.searchProductLibrary[key].isPosTExist = true;
+        if (this.postSource === '主列表') {
+            for (let key in this.productLibrary) {
+                if (this.productLibrary[key].id === this.currentProduct.id) {
+                    this.productLibrary[key].isPosTExist = true;
+                }
+            }
+        } else {
+            for (let key in this.searchProductLibrary) {
+                if (this.searchProductLibrary[key].id === this.currentProduct.id) {
+                    this.searchProductLibrary[key].isPosTExist = true;
+                }
             }
         }
         await this.addPointProductDetailPost(this.currentProduct);
-
         this.closePage();
     }
 

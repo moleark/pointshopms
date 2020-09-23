@@ -12,8 +12,10 @@ export class VPointProductPost extends VPage<CProduct>{
     }
 
     onSave = async () => {
-        let { onSavePointProductPost } = this.controller;
-        await onSavePointProductPost(this.textarea.value)
+        if (this.textarea.value !== '') {
+            let { onSavePointProductPost } = this.controller;
+            await onSavePointProductPost(this.textarea.value)
+        }
         // this.textarea.value = '';
     }
 

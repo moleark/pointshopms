@@ -11,6 +11,7 @@ export const noProductNone: JSX.Element = <div className="mt-4 d-flex justify-co
 
 export class VProduct extends VPage<CProduct>{
     private filterGenre: string;
+    @observable postSource: string = '主列表';
     async open(param?: any) {
         this.openPage(this.page);
     }
@@ -29,7 +30,19 @@ export class VProduct extends VPage<CProduct>{
     }
 
     renderPointProductPost = (pointProduct: any) => {
-        return null;
+        let { openPointProductPost } = this.controller;
+        let { isPosTExist } = pointProduct;
+        return <div className="d-flex justify-content-end mx-2" onClick={(e) => { e.stopPropagation(); openPointProductPost(pointProduct, isPosTExist ? '编辑' : '创建', this.postSource) }}>
+            <div>帖文</div>
+            <div>
+                {
+                    isPosTExist
+                        ? <span><FA name="edit" size="lg" className="mx-2 text-primary" /></span>
+                        : <span><FA name="plus-circle" size="lg" className="mx-2 text-success" /></span>
+                }
+            </div>
+        </div>
+        // return null;
     }
 
     protected renderPointProduct = (pointProduct: any) => {
@@ -97,6 +110,7 @@ export class VProduct extends VPage<CProduct>{
 export class VSearchProduct extends VProduct {
     @observable searchKey: string;
     @observable searchProductLibrary: any[] = [];   /* 商品库搜索列表  */
+    @observable postSource: string = '检索列表';
     async open(param?: any) {
         let { searchKey, searchProduct } = param;
         this.searchKey = searchKey;
@@ -107,7 +121,7 @@ export class VSearchProduct extends VProduct {
     renderPointProductPost = (pointProduct: any) => {
         let { openPointProductPost } = this.controller;
         let { isPosTExist } = pointProduct;
-        return <div className="d-flex justify-content-end mx-2" onClick={(e) => { e.stopPropagation(); openPointProductPost(pointProduct, isPosTExist ? '编辑' : '创建') }}>
+        return <div className="d-flex justify-content-end mx-2" onClick={(e) => { e.stopPropagation(); openPointProductPost(pointProduct, isPosTExist ? '编辑' : '创建', this.postSource) }}>
             <div>帖文</div>
             <div>
                 {
