@@ -12,6 +12,7 @@ import { VCreationProduct } from './VCreationProduct';
 import { VPointProductPost } from './VPointProductPost';
 import { GLOABLE } from '../configuration';
 import { VPointProductPostShow } from './VPointProductPostShow';
+import { VPostOperaLabel } from './VPostOperaLabel';
 export const ProductSources = [
     { id: 1, source: '本司', sourceId: 1, type: 'selfsales' },
     { id: 2, source: '京东', sourceId: 2, type: 'jd.com' },
@@ -30,7 +31,7 @@ export class CProduct extends CUqBase {
     @observable searchProductLibrary: any[] = []; /* 查询商品 */
     @observable postSource: any;                  /* 帖文操作来源 */
     @observable currentSource: any;               /* 当前商品源 */
-    @observable searchProductsToCreation: QueryPager<any>;    /* 新增商品时所查询的列表 */
+    @observable searchProductsToCreation: QueryPager<any> | any[];    /* 新增商品时所查询的列表 */
     @observable isSelectedGenre: boolean = false;             /* 商品类型是否选择 */
     @observable toProductUpShelf: boolean;                    /* 是否上架or下架 */
     @observable isCreationProduct: boolean;                   /* 是否新增商品 */
@@ -41,7 +42,7 @@ export class CProduct extends CUqBase {
 
     protected async internalStart(param?: any) {
         let searchProduct = await this.searchByKey(param);
-        searchProduct = await this.isPosTExist(searchProduct);
+        // searchProduct = await this.isPosTExist(searchProduct);
         this.searchProductLibrary = searchProduct;
         this.currentSource = ProductSources[0]
         this.closePage();
@@ -90,6 +91,10 @@ export class CProduct extends CUqBase {
     openPointProductPostShow = async () => {
         this.htmlFragment = await this.getPointProductDetailPostHtml(this.currentProduct);
         this.openVPage(VPointProductPostShow);
+    }
+
+    renderPostOperaLabel = (pointProduct: any, postSource?: any) => {
+        return this.renderView(VPostOperaLabel, { pointProduct, postSource });
     }
 
     /**
@@ -208,9 +213,9 @@ export class CProduct extends CUqBase {
      * 获取商品库
      */
     getProductLibrary = async () => {
-        // this.productLibrary = await this.uqs.积分商城.PointProductLib.all();
-        let res = await this.uqs.积分商城.PointProductLib.all();
-        this.productLibrary = await this.isPosTExist(res);
+        this.productLibrary = await this.uqs.积分商城.PointProductLib.all();
+        /*       let res = await this.uqs.积分商城.PointProductLib.all();
+              this.productLibrary = await this.isPosTExist(res); */
         // this.productLibrary = await this.getFurtherReq(result);
     }
 
@@ -259,7 +264,8 @@ export class CProduct extends CUqBase {
      */
     onSavePointProductPost = async (content: any) => {
         this.currentProduct.content = content;
-        if (this.postSource === '主列表') {
+        this.currentProduct.isPosTExist = true;
+        /* if (this.postSource === '主列表') {
             for (let key in this.productLibrary) {
                 if (this.productLibrary[key].id === this.currentProduct.id) {
                     this.productLibrary[key].isPosTExist = true;
@@ -271,7 +277,7 @@ export class CProduct extends CUqBase {
                     this.searchProductLibrary[key].isPosTExist = true;
                 }
             }
-        }
+        } */
         await this.addPointProductDetailPost(this.currentProduct);
         this.closePage();
     }
@@ -444,11 +450,14 @@ export class CProduct extends CUqBase {
         if (pointProductFromGenre.length) {
             for (let key of pointProductFromGenre) {
                 let searchpointProductByKey = await this.getPointProductLibLoad(key.pointProduct.id);
-                let as = await this.getPointProductDetailPost(key.pointProduct.id);
+                /* let as = await this.getPointProductDetailPost(key.pointProduct.id);
                 if (searchpointProductByKey !== undefined)
-                    filterPointProducts.push({ ...searchpointProductByKey, isPosTExist: as !== undefined ? true : false });
+                    filterPointProducts.push({ ...searchpointProductByKey, isPosTExist: as !== undefined ? true : false }); */
+                if (searchpointProductByKey !== undefined)
+                    filterPointProducts.push(searchpointProductByKey);
             }
         }
+        filterPointProducts.sort((a, b) => a.point - b.point);
         this.productLibrary = filterPointProducts;
     }
 

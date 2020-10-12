@@ -89,6 +89,8 @@ export class VProductOperation extends VPage<CProduct>{
         let { toGenreSelect, openVUpdatePicture, toProductUpShelf, isCreationProduct, goalProductInfo } = this.controller;
         let { genreShow, imageUrl, point, startDate, endDate, description, descriptionC, grade, radioy, unit } = goalProductInfo;
         // grade = grade !== undefined ? grade : (radioy && unit ? `${radioy}${unit}` : undefined);
+        console.log(goalProductInfo.startDate);
+
         startDate = startDate !== undefined ? momentFormat(startDate) : startDate;
         endDate = endDate !== undefined ? momentFormat(endDate) : endDate;
         let genreData = { point, startDate, endDate, grade };

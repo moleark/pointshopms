@@ -71,9 +71,12 @@ export class VCreationProduct extends VPage<CProduct>{
     }
 
     private onScrollBottom = async (scroller: Scroller) => {
+
         scroller.scrollToBottom();
         let { searchProductsToCreation } = this.controller;
-        searchProductsToCreation.more();
+        if (!(searchProductsToCreation instanceof Array)) {
+            searchProductsToCreation.more();
+        }
     }
 
     private page = observer(() => {

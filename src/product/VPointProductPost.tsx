@@ -2,10 +2,11 @@ import * as React from 'react';
 import { VPage, Page } from 'tonva';
 import { CProduct } from 'product/CProduct';
 import { observer } from 'mobx-react';
+import { observable } from 'mobx';
 
 
 export class VPointProductPost extends VPage<CProduct>{
-    textarea: HTMLTextAreaElement;
+    @observable textarea: HTMLTextAreaElement;
 
     async open(param?: any) {
         this.openPage(this.page);
@@ -27,7 +28,7 @@ export class VPointProductPost extends VPage<CProduct>{
             {currentPostContent && <button onClick={openPointProductPostShow} type="button" className="btn btn-sm btn-success mr-3">预览</button>}
             <button onClick={() => cMedia.openMainPage()} type="button" className="btn btn-sm btn-success mr-3">图片</button>
             {/* <button onClick={() => { document.location.href = "http://localhost:7799?type=otherfiles" }} type="button" className="btn btn-sm btn-success mr-3">图片</button> */}
-            <button onClick={() => { this.onSave() }} type="button" className="btn btn-sm btn-success mr-3">保存</button>
+            <button onClick={() => { this.onSave() }} type="button" className={`btn btn-sm btn-success mr-3`}>保存</button>
         </div>;
 
         return <Page header={header} right={right}>

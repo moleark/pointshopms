@@ -45,6 +45,10 @@ export class VProduct extends VPage<CProduct>{
         // return null;
     }
 
+    renderPostOperaLabel = (pointProduct: any) => {
+        return this.controller.renderPostOperaLabel(pointProduct, this.postSource)
+    }
+
     protected renderPointProduct = (pointProduct: any) => {
         let { description, descriptionC, imageUrl, point, grade } = pointProduct;
         return <div className="row m-1 w-100">
@@ -58,7 +62,8 @@ export class VProduct extends VPage<CProduct>{
                         <small>分</small>
                     </div>
                 </div>
-                {this.renderPointProductPost(pointProduct)}
+                {this.renderPostOperaLabel(pointProduct)}
+                {/* {this.renderPointProductPost(pointProduct)} */}
             </div>
         </div>
     }
@@ -135,10 +140,12 @@ export class VSearchProduct extends VProduct {
 
 
     refreshProduct = async () => {
-        let { productLibrary, isPosTExist } = this.controller;
+        let { productLibrary, isPosTExist, getProductLibrary } = this.controller;
         this.searchKey = undefined;
+        await getProductLibrary();
         // this.searchProductLibrary = await isPosTExist(productLibrary);
-        this.controller.searchProductLibrary = await isPosTExist(productLibrary);
+        this.controller.searchProductLibrary = this.controller.productLibrary;
+        // this.controller.searchProductLibrary = await isPosTExist(productLibrary);
     }
 
     page = observer(() => {
