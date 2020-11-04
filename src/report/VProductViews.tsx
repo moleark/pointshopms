@@ -54,7 +54,7 @@ export class VProductViews extends VPage<CReport> {
     }
 
     private page = observer(() => {
-        let { browsedProductLib, cApp, renderSearchHeader, openPointProductVisitRecord } = this.controller;
+        let { browsedProductLib } = this.controller;
         let header = <div className="w-100 pr-2 d-flex justify-content-between">
             <span className="align-self-center">浏览量PV</span>
             {/* <div className="w-50">{renderSearchHeader()}</div> */}

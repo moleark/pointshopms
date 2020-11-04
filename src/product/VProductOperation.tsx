@@ -6,7 +6,6 @@ import { productPointValidation } from 'tools/inputValidations';
 import { PointProductImage } from 'tools/productImage';
 import classNames from 'classnames';
 import { observable } from 'mobx';
-import { GLOABLE } from 'configuration';
 import { momentFormat } from 'tools/momentFormat';
 const schema: Schema = [
     { name: 'point', type: 'string', required: true },
@@ -47,7 +46,7 @@ export class VProductOperation extends VPage<CProduct>{
     private onFormButtonClick = async (name: string, context: Context) => {
         let { closePage, saveOperation } = this.controller;
         let tipMainPart = await saveOperation({ data: context.form.data, state: this.currentState });
-        this.tips = `此商品${tipMainPart}成功！`;
+        this.tips = `此商品${tipMainPart.replace(/\s+/g,'')}成功！`;
         if (this.tips)
             setTimeout(() => this.tips = undefined, 1000);
         setTimeout(() => closePage(1), 500);
@@ -87,10 +86,7 @@ export class VProductOperation extends VPage<CProduct>{
     private page = observer(() => {
         let { EDIT, UPSHELF, DOWNSHELF, REUPSHELF } = OperationAdapt;
         let { toGenreSelect, openVUpdatePicture, toProductUpShelf, isCreationProduct, goalProductInfo } = this.controller;
-        let { genreShow, imageUrl, point, startDate, endDate, description, descriptionC, grade, radioy, unit } = goalProductInfo;
-        // grade = grade !== undefined ? grade : (radioy && unit ? `${radioy}${unit}` : undefined);
-        console.log(goalProductInfo.startDate);
-
+        let { genreShow, imageUrl, point, startDate, endDate, description, descriptionC, grade } = goalProductInfo;
         startDate = startDate !== undefined ? momentFormat(startDate) : startDate;
         endDate = endDate !== undefined ? momentFormat(endDate) : endDate;
         let genreData = { point, startDate, endDate, grade };

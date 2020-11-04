@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { nav, Page, Image, VPage } from 'tonva';
+import { nav, Image, VPage } from 'tonva';
 import { Prop, IconText, FA, PropGrid, LMR } from 'tonva';
 import { observer } from 'mobx-react';
 import { EditMeInfo } from './EditMeInfo';
@@ -25,8 +25,8 @@ export class VMe extends VPage<CMe> {
     }
 
     private openLottery = async () => {
-        let { cApp } = this.controller;
-        let { cLottery } = cApp;
+        // let { cApp } = this.controller;
+        // let { cLottery } = cApp;
         // await cLottery.openLotteryProduct();
         // await this.controller.openLottery();
     }

@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { VPage, Page, Form, Schema, UiSchema, UiSelect, Context, LMR, List } from 'tonva';
+import { VPage, Page, Form, Schema, UiSchema, UiSelect, Context } from 'tonva';
 import { CReport } from './CReport';
-import { Chart, Point, Line, Slider, LineAdvance } from 'bizcharts';
-import { observable } from 'mobx';
+import { Chart, Slider, LineAdvance } from 'bizcharts';
 
 const schema: Schema = [
     { name: 'pointRange', type: 'string', required: true },
@@ -43,7 +42,7 @@ export class VPointsDist extends VPage<CReport> {
     }
 
     private page = observer(() => {
-        let { pointRangeLib, pointRange, maxPointRangeLib } = this.controller;
+        let { pointRangeLib, pointRange } = this.controller;
         /* let footer = <div className="w-100 d-flex justify-content-center">
             <button onClick={() => { this.onSaveInquire() }} className="btn btn-primary w-50">查询</button>
         </div> */

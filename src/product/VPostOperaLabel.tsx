@@ -3,10 +3,14 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { FA, View } from 'tonva';
 import { CProduct } from './CProduct';
+import classNames from 'classnames';
 
 export class VPostOperaLabel extends View<CProduct> {
     @observable private isPosTExist: boolean;
     render(param: any): JSX.Element {
+        let { pointProduct } = param;
+        if (pointProduct.isPosTExist) this.isPosTExist = pointProduct.isPosTExist;
+        else this.getPostOpera(pointProduct);
         return <this.content param={param} />;
     }
 
@@ -17,20 +21,11 @@ export class VPostOperaLabel extends View<CProduct> {
 
     private content = observer((param: any): any => {
         let { pointProduct, postSource } = param.param;
-        let { openPointProductPost } = this.controller;
-        if (pointProduct.isPosTExist) {
-            this.isPosTExist = pointProduct.isPosTExist;
-        } else {
-            this.getPostOpera(pointProduct);
-        }
-        return <div className="d-flex justify-content-end mx-2" onClick={(e) => { e.stopPropagation(); openPointProductPost(pointProduct, this.isPosTExist ? '编辑' : '创建', postSource) }}>
+        let { openPointProductPost } = this.controller; 
+        return <div className="d-flex justify-content-end mx-2" onClick={(e) => { e.stopPropagation(); openPointProductPost(pointProduct, this.isPosTExist , postSource) }}>
             <div>帖文</div>
             <div>
-                {
-                    this.isPosTExist
-                        ? <span><FA name="edit" size="lg" className="mx-2 text-primary" /></span>
-                        : <span><FA name="plus-circle" size="lg" className="mx-2 text-success" /></span>
-                }
+                <span><FA name={this.isPosTExist ? 'edit' :'plus-circle'} size="lg" className={classNames('mx-2', this.isPosTExist ?'text-primary':'text-success')} /></span>
             </div>
         </div>
     });

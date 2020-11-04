@@ -1,6 +1,6 @@
 import { CUqBase } from 'CBase';
 import { VProductViews } from './VProductViews';
-import { VPointsDist, PointRangeLibForm } from './VPointsDist';
+import { VPointsDist } from './VPointsDist';
 import { observable } from 'mobx';
 import { VBrowseProductSearchHeader } from 'lordScreen/VSearchHeader';
 import { VPointProductVisitRecord } from './VPointProductVisitRecord';

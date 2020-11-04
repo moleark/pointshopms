@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VPage, Page, List, FA, tv } from 'tonva';
+import { VPage, Page, List, FA } from 'tonva';
 import { CProduct, ProductSources } from 'product/CProduct';
 import { PointProductImage } from 'tools/productImage';
 import { searchKeyShow } from 'lordScreen/VSearchHeader';
@@ -29,7 +29,7 @@ export class VProduct extends VPage<CProduct>{
         await getProductLibrary();
     }
 
-    renderPointProductPost = (pointProduct: any) => {
+    /* renderPointProductPost = (pointProduct: any) => {
         let { openPointProductPost } = this.controller;
         let { isPosTExist } = pointProduct;
         return <div className="d-flex justify-content-end mx-2" onClick={(e) => { e.stopPropagation(); openPointProductPost(pointProduct, isPosTExist ? '编辑' : '创建', this.postSource) }}>
@@ -43,7 +43,7 @@ export class VProduct extends VPage<CProduct>{
             </div>
         </div>
         // return null;
-    }
+    } */
 
     renderPostOperaLabel = (pointProduct: any) => {
         return this.controller.renderPostOperaLabel(pointProduct, this.postSource)
@@ -52,7 +52,7 @@ export class VProduct extends VPage<CProduct>{
     protected renderPointProduct = (pointProduct: any) => {
         let { description, descriptionC, imageUrl, point, grade } = pointProduct;
         return <div className="row m-1 w-100">
-            <div title={description} className="col-4 m-auto p-0"><PointProductImage chemicalId={imageUrl} className="w-100" /></div>
+            <div title={description} className="col-4 m-auto p-0"><PointProductImage chemicalId={imageUrl} className="w-100" style={{maxHeight:'30vw'}} /></div>
             <div className="col-8 small py-1">
                 <div>{descriptionC}</div>
                 <div className="mt-2 mb-1">{grade}</div>
@@ -123,7 +123,7 @@ export class VSearchProduct extends VProduct {
         this.openPage(this.page);
     }
 
-    renderPointProductPost = (pointProduct: any) => {
+    /* renderPointProductPost = (pointProduct: any) => {
         let { openPointProductPost } = this.controller;
         let { isPosTExist } = pointProduct;
         return <div className="d-flex justify-content-end mx-2" onClick={(e) => { e.stopPropagation(); openPointProductPost(pointProduct, isPosTExist ? '编辑' : '创建', this.postSource) }}>
@@ -136,11 +136,11 @@ export class VSearchProduct extends VProduct {
                 }
             </div>
         </div>
-    }
+    } */
 
 
     refreshProduct = async () => {
-        let { productLibrary, isPosTExist, getProductLibrary } = this.controller;
+        let { getProductLibrary } = this.controller;
         this.searchKey = undefined;
         await getProductLibrary();
         // this.searchProductLibrary = await isPosTExist(productLibrary);
@@ -151,7 +151,7 @@ export class VSearchProduct extends VProduct {
     page = observer(() => {
         let { onProductSelected, renderSearchHeader, searchProductLibrary } = this.controller;
         let header = <div className="mx-1 mr-3 w-100">{renderSearchHeader()}</div>;
-        return <Page header={header}>
+        return <Page header={header} headerClassName="bg-light">
             {this.searchKey && searchKeyShow(this.searchKey, this.refreshProduct)}
             <List items={searchProductLibrary} item={{ render: this.renderPointProduct, onClick: onProductSelected }} none={noProductNone} />
         </Page>

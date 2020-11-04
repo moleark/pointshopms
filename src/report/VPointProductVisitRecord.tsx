@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { VPage, Page, List } from 'tonva';
+import { VPage, Page } from 'tonva';
 import { CReport } from './CReport';
 
 export class VPointProductVisitRecord extends VPage<CReport> {

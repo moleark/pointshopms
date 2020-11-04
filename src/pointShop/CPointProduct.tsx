@@ -30,7 +30,7 @@ export class CPointProduct extends CUqBase {
     }
 
     /**
-     * 据类型筛选商品  ------------------------------ 已无 pack 需要uq
+     * 据类型筛选商品
      */
     filterByProductGenre = async (currentGenre: any) => {
         let { cProduct } = this.cApp;
@@ -42,12 +42,6 @@ export class CPointProduct extends CUqBase {
                 filterPointProducts.push(searchpointProductByKey);
             }
         }
-        // if (pointProductByCurrentGenre.length) {
-        //     for (let key of pointProductByCurrentGenre) {
-        //         let searchpointProductByKey = await this.getSpecifyPointProduct({ product: key.product, pack: key.pack });
-        //         filterPointProducts.push(searchpointProductByKey);
-        //     }
-        // }
         this.pointProducts = filterPointProducts;
     }
 
@@ -79,14 +73,6 @@ export class CPointProduct extends CUqBase {
         let { id } = productInfo;
         // return await this.uqs.积分商城.PointProductGenre.obj({ product, pack });
         return await this.uqs.积分商城.GetPointProductGenre.obj({ pointProduct: id })
-    }
-
-    /**
-     * 获取指定的可兑换商品信息
-     */
-    getSpecifyPointProduct = async (productInfo: any) => {
-        let { product, pack } = productInfo;
-        return await this.uqs.积分商城.PointProduct.obj({ product, pack });
     }
 
     /**

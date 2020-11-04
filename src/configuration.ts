@@ -4,7 +4,7 @@ import { tvs } from "tvs";
 
 export const appConfig: AppConfig = {
     appName: '百灵威系统工程部/pointshopms',
-    version: '1.0.0',
+    version: '1.0.1',
     tvs: tvs,
     loginTop: jnkTop,
     oem: '百灵威',
@@ -16,6 +16,8 @@ const GLOABLE_PRODUCTION = {
     SALESREGION_CN: 1,
     TIPDISPLAYTIME: 3000,
     CONTENTSITE: "https://web.jkchemical.com",
+    // JD: 'http://localhost:3016/jd',
+    JD: 'https://joint.jkchemical.com/jd',
 }
 
 const GLOABLE_TEST = {
@@ -24,6 +26,8 @@ const GLOABLE_TEST = {
     SALESREGION_CN: 4,
     TIPDISPLAYTIME: 3000,
     CONTENTSITE: "https://c.jkchemical.com/jk-web",
+    // JD: 'http://localhost:3016/jd',
+    JD: 'https://c.jkchemical.com/joint/jd',
 }
 
 // 生产配置

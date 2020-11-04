@@ -13,16 +13,18 @@ import { VPointProductPost } from './VPointProductPost';
 import { GLOABLE } from '../configuration';
 import { VPointProductPostShow } from './VPointProductPostShow';
 import { VPostOperaLabel } from './VPostOperaLabel';
+import { FetchPost } from 'tools/wFeatch';
+import { JDImagePath } from 'tools/productImage';
 export const ProductSources = [
     { id: 1, source: '本司', sourceId: 1, type: 'selfsales' },
     { id: 2, source: '京东', sourceId: 2, type: 'jd.com' },
 ]
 
 export const OperationAdapt = {
-    EDIT: { type: 'edit', name: '修 改', tip: '修改' },
-    UPSHELF: { type: 'upShelf', name: '上 架', tip: '上架' },
-    REUPSHELF: { type: 'ReUpShelf', name: '上 架', tip: '上架' },
-    DOWNSHELF: { type: 'downShelf', name: '下 架', tip: '下架' },
+    EDIT: { type: 'edit', name: '修 改'},
+    UPSHELF: { type: 'upShelf', name: '上 架'},
+    REUPSHELF: { type: 'ReUpShelf', name: '上 架'},
+    DOWNSHELF: { type: 'downShelf', name: '下 架'},
 }
 
 export class CProduct extends CUqBase {
@@ -30,7 +32,11 @@ export class CProduct extends CUqBase {
     @observable productLibrary: any[] = [];       /* 商品库 */
     @observable searchProductLibrary: any[] = []; /* 查询商品 */
     @observable postSource: any;                  /* 帖文操作来源 */
-    @observable currentSource: any;               /* 当前商品源 */
+
+    @observable currentSource: any = ProductSources[0];        /* 当前商品源 */
+    @observable pageIndex: number = 1;            /* 当前第几页 */
+    @observable pageCount: number = 1;            /* 总页数 */
+
     @observable searchProductsToCreation: QueryPager<any> | any[];    /* 新增商品时所查询的列表 */
     @observable isSelectedGenre: boolean = false;             /* 商品类型是否选择 */
     @observable toProductUpShelf: boolean;                    /* 是否上架or下架 */
@@ -44,7 +50,6 @@ export class CProduct extends CUqBase {
         let searchProduct = await this.searchByKey(param);
         // searchProduct = await this.isPosTExist(searchProduct);
         this.searchProductLibrary = searchProduct;
-        this.currentSource = ProductSources[0]
         this.closePage();
         this.openVPage(VSearchProduct, { searchKey: param, searchProduct });
     }
@@ -65,21 +70,23 @@ export class CProduct extends CUqBase {
     /**
      * 新增商品
      */
-    openCreationProduct = async () => {
+    openCreationProduct = async (keyWord?:any) => {
         this.goalProductInfo = { genreShow: undefined };
-        this.searchProductsToCreation = undefined;
-        // await this.searchSelfPointProductGenre('本司');
-        this.openVPage(VCreationProduct);
+        if (typeof keyWord !== 'string') {
+            this.searchProductsToCreation = undefined;
+            this.currentSource=ProductSources[0];
+        }
+        this.openVPage(VCreationProduct,keyWord);
     }
 
     /**
      * 帖文页面
      */
-    openPointProductPost = async (pointProduct: any, type: string, postSource: string) => {
-        this.postType = type;
+    openPointProductPost = async (pointProduct: any, isPosTExist: boolean, postSource: string) => {
+        this.postType = isPosTExist ? '编辑' :'创建';
         this.postSource = postSource;
         this.currentProduct = pointProduct;
-        if (this.postType === '编辑')
+        if (isPosTExist)
             this.currentPostContent = await this.getPointProductDetailPost(pointProduct);
         else this.currentPostContent = undefined;
         this.openVPage(VPointProductPost);
@@ -90,7 +97,10 @@ export class CProduct extends CUqBase {
      */
     openPointProductPostShow = async () => {
         this.htmlFragment = await this.getPointProductDetailPostHtml(this.currentProduct);
-        this.openVPage(VPointProductPostShow);
+        let getProductSource =  await this.uqs.积分商城.PointProductSource.obj({ pointProduct:this.currentProduct, sourceId: undefined });
+        let isScale = false;
+        if (getProductSource && getProductSource.type === 'jd.com') isScale = true;
+        this.openVPage(VPointProductPostShow,isScale);
     }
 
     renderPostOperaLabel = (pointProduct: any, postSource?: any) => {
@@ -98,27 +108,37 @@ export class CProduct extends CUqBase {
     }
 
     /**
+     * 更改商品源
+     */
+    changeCurrentProductSource = (productSource: any) => {
+        if (this.currentSource.id !== productSource.id) {
+            this.currentSource = productSource;
+            this.searchProductsToCreation = [];
+            this.pageIndex = 1;
+        }
+    }
+    /**
      * 搜索商品库中商品
      */
     searchByKey = async (key: any) => {
         return await this.uqs.积分商城.PointProductLib.search(key, 0, 100);
-        // return await this.getFurtherReq(result);
     }
 
     /**
-     * 搜索要添加到商品库的商品  -----------------------------第三方 京东暂未对接
+     * 搜索要添加到商品库的商品
      */
     searchToCreationProduct = async (searchTerm: any) => {
-        let { keyWord, productSource } = searchTerm;
-        let { sourceId, type } = productSource;
-        this.currentSource = productSource;
-
+        let { keyWord,Pagination } = searchTerm;
+        let { type } = this.currentSource;
+        if (Pagination === undefined) this.pageIndex = 1;
         switch (type) {
             case "selfsales":
-                await this.searchSelfPointProductGenre(keyWord);
+                await this.searchSelfPointProduct(keyWord);
                 return;
             case 'jd.com':
-                // await this.searchSelfPointProductGenre('京东'); //此处判别uq需更换
+                await this.searchPointProductByJD(keyWord);
+                /* let res = await window.fetch(GLOABLE.JD + '/hello');
+                console.log(await res.text()); */
                 return;
             default:
                 return;
@@ -128,10 +148,44 @@ export class CProduct extends CUqBase {
     /**
      * 查询来自营销产品库的可兑换产品
      */
-    searchSelfPointProductGenre = async (keyWord: string) => {
+    searchSelfPointProduct= async (keyWord: string) => {
         let { currentSalesRegion } = this.cApp;
         this.searchProductsToCreation = new QueryPager<any>(this.uqs.product.SearchPointProduct, 10, 10);
         await this.searchProductsToCreation.first({ keyWord, salesRegion: currentSalesRegion });
+    }
+
+    /**
+     * 查询来自JD的产品
+     */
+    searchPointProductByJD = async (keyWord: string) => {
+        let JDImgSize = 'n0/';
+        let param = { Keyword: keyWord ,pageIndex: this.pageIndex,sortType:'price_asc' };//sortType:'price_asc' 
+        let res = await FetchPost(GLOABLE.JD +'/search', JSON.stringify(param));
+        let searchArr = [];
+        if (res.ok) {
+            let result = await res.json();
+            let res1 = await FetchPost(GLOABLE.JD + '/getProductSellPrice', JSON.stringify({ sku: result.skuLib }));
+            let res2 = await res1.json();
+            this.pageIndex = result.pageIndex;
+            this.pageCount = result.pageCount; 
+            for (let key of result.hitResult) {
+                if (key.wstate === '1' && key.wyn === '1') {
+                    let findPriceBySku = res2.find(v => String(v.skuId) === String(key.wareId));
+                    if(findPriceBySku !==undefined)
+                        searchArr.push({
+                            description:key.wareName,
+                            descriptionC:key.wareName,
+                            grade: undefined,
+                            id: key.wareId,
+                            imageUrl: JDImagePath + JDImgSize + key.imageUrl,
+                            point: undefined,
+                            price: findPriceBySku,
+                            isValid: 1
+                        })
+                }
+            }
+        }
+        this.searchProductsToCreation = searchArr;
     }
 
     /**
@@ -145,15 +199,20 @@ export class CProduct extends CUqBase {
      * 选择商品
      */
     onProductSelected = async (currentProduct: any, productOrigin?: any) => {
-        let { id, descriptionC } = currentProduct;
+        let { id, sourceId } = currentProduct;
         let productGenre = undefined;
         /* 获取商品完整信息 */
         let getProductCompleteInfo = undefined;
+        let getProductDetailByJD = undefined;
         if (productOrigin !== undefined) {
             let isExchangeProduct = await this.getProductSources(currentProduct);
             if (isExchangeProduct !== undefined) {
                 getProductCompleteInfo = await this.getPointProductLibLoad(isExchangeProduct.pointProduct.id);
                 productGenre = await this.getProductGenre(getProductCompleteInfo);
+            }
+            if (isExchangeProduct === undefined && this.currentSource.type === "jd.com") {
+                let resultByJD = await FetchPost(GLOABLE.JD + '/getProductDetail', JSON.stringify({ sku: sourceId,queryExts:'nappintroduction' }));
+                if (resultByJD.ok) getProductDetailByJD = await resultByJD.json();
             }
         } else {
             getProductCompleteInfo = await this.getPointProductLibLoad(id);
@@ -166,16 +225,21 @@ export class CProduct extends CUqBase {
         this.isCreationProduct = getProductCompleteInfo !== undefined ? false : true
         /* 检测是否 上架 or 下架 */
         this.toProductUpShelf = true;/* 显示上架 */
-        if (!this.isCreationProduct && momentFormat() <= getProductCompleteInfo.endDate) this.toProductUpShelf = false; /* 显示下架 */
-        /* 商品是否有类型 */
-        // let productGenre = await this.getProductGenre(productOrigin !== undefined ? getProductCompleteInfo : currentProduct);
-        // if (!this.isCreationProduct) productGenre = await this.getProductGenre(currentProduct);
+        let fm = 'YYYY-MM-DD HH:mm:ss';
+        let FormatEndDate = momentFormat(!this.isCreationProduct ? getProductCompleteInfo.endDate : undefined, fm);
+        let FormatnewDate = momentFormat(undefined, fm);
+        if (!this.isCreationProduct && FormatnewDate <= FormatEndDate) this.toProductUpShelf = false; /* 显示下架 */
+        // if (!this.isCreationProduct && momentFormat() <= getProductCompleteInfo.endDate) this.toProductUpShelf = false; /* 显示下架 */
         /* 商品信息 */
-        // let result = this.isCreationProduct ? { ...(product ? { ...product.obj, sourceId: id.id } : {}), radiox, radioy, unit, grade: `${radioy}${unit}` } : getProductCompleteInfo;
         let result = this.isCreationProduct ? { ...currentProduct } : getProductCompleteInfo;
+        if (getProductDetailByJD) {
+            result.grade = 1 + getProductDetailByJD.saleUnit;
+            result.content = getProductDetailByJD.nappintroduction.replace(/\\n/g, '');
+            // console.log( result.content );
+            // result.content = getProductDetailByJD.param;
+        }
         this.goalProductInfo = {
             ...result,
-            // ...currentProduct,
             genreShow: productGenre ? <>{tv(productGenre.genre, (v) => <>{v.name}</>)}</> : undefined, //可为genreShow,也可为undefined
             genre: productGenre ? productGenre.genre : genre,
         };
@@ -214,24 +278,7 @@ export class CProduct extends CUqBase {
      */
     getProductLibrary = async () => {
         this.productLibrary = await this.uqs.积分商城.PointProductLib.all();
-        /*       let res = await this.uqs.积分商城.PointProductLib.all();
-              this.productLibrary = await this.isPosTExist(res); */
-        // this.productLibrary = await this.getFurtherReq(result);
     }
-
-    /**
-     * 进一步获取商品所有信息
-     */
-    /* getFurtherReq = async (dataList: any) => {
-        let arr: any[] = [];
-        if (dataList.length) {
-            for (let key of dataList) {
-                let res = await this.getPointProductLibLoad(key.id);
-                arr.push(res);
-            }
-        }
-        return arr;
-    } */
 
     /**
      * 据商品id 获取对应的商品所有信息
@@ -319,22 +366,19 @@ export class CProduct extends CUqBase {
         let { data, state } = param;
         let productInfo = { ...this.goalProductInfo, ...data };
         this.isSelectedGenre = false;
-        /* 检测是否有商品源(上架使用) */
-        // let resSource = await this.getProductSources(productInfo);
-        // if (!resSource) await this.addPointProductSource(productInfo);
         switch (state) {
             case EDIT.type:
                 await this.editProduct(productInfo);
-                return EDIT.tip;
+                return EDIT.name;
             case UPSHELF.type:
                 await this.upShelfProduct(productInfo);
-                return UPSHELF.tip;
+                return UPSHELF.name;
             case REUPSHELF.type:
                 await this.reUpShelfProduct(productInfo);
-                return REUPSHELF.tip;
+                return REUPSHELF.name;
             case DOWNSHELF.type:
                 await this.downShelfProduct(productInfo);
-                return DOWNSHELF.tip;
+                return DOWNSHELF.name;
             default:
                 return;
         }
@@ -344,7 +388,7 @@ export class CProduct extends CUqBase {
      * 修改商品
      */
     editProduct = async (productInfo: any) => {
-        let { point, imageUrl, genre, startDate, endDate, id } = productInfo;
+        let { point, imageUrl, startDate, endDate, id } = productInfo;
         let pointProductFind = await this.getPointProductLibLoad(id);
         let { point: pfPoint, imageUrl: pfImageUrl, startDate: pfStartDate, endDate: pfEndDate } = pointProductFind;
         await this.dealWithProductGenre(productInfo);
@@ -396,6 +440,8 @@ export class CProduct extends CUqBase {
         let resSource = await this.getProductSources(productInfo);
         if (resSource === undefined)
             await this.addPointProductSource(productInfo);
+        if (this.currentSource.type === "jd.com") 
+            await this.addPointProductDetailPost(productInfo)
     }
 
     /**
@@ -419,7 +465,6 @@ export class CProduct extends CUqBase {
      */
     getProductSources = async (pointProduct: any) => {
         let type = this.currentSource.type === "selfsales" ? 'self' : this.currentSource.type;
-        // return await this.uqs.积分商城.PointProductSource.obj({ pointProduct, sourceId: pointProduct.sourceId });
         return await this.uqs.积分商城.GetPointProductBySource.obj({ sourceId: pointProduct.sourceId, type });
     }
 

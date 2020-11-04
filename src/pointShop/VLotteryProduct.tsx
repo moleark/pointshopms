@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { VPage, Page, List, FA, Form, UiCustom, ObjectSchema, NumSchema, UiSchema, StringSchema, } from 'tonva';
+import { VPage, Page, List, FA, Form, UiCustom, NumSchema, UiSchema, StringSchema, } from 'tonva';
 import { CLottery } from './CLottery';
 import { PointProductImage } from 'tools/productImage';
 import { observable } from 'mobx';
