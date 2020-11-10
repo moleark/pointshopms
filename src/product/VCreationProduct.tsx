@@ -13,6 +13,7 @@ export class VCreationProduct extends VPage<CProduct>{
     @observable private searchIsBlank: boolean = false;
     @observable Pagination: boolean = false;
     @observable searchKey: string;
+    @observable searchPlaceholder: string='输入商品名称、编号';
     async open(param?: any) {
         if (param !== undefined) this.searchKey = param;
         this.openPage(this.page);
@@ -109,7 +110,7 @@ export class VCreationProduct extends VPage<CProduct>{
                 </div>
                 <LMR right={LMRRight}>
                     <form onSubmit={(e) => { e.preventDefault(); this.searchProduct() }} >
-                        <input ref={v => this.genreInput = v} type="text" placeholder="请输入商品名称" className="form-control"></input>
+                        <input ref={v => this.genreInput = v} type="text" placeholder={currentSource.type === 'jd.com' ? '输入商品名称' :'输入商品名称、编号'} className="form-control"></input>
                     </form>
                 </LMR>
                 {this.searchIsBlank ? <div className="text-danger mt-1 small">{`${!this.genreInput.value ? '请输入商品名称' : !currentSource ? '请选择商品源' : ''}`}</div> : null}

@@ -8,7 +8,7 @@ import classNames from 'classnames';
 export class VPostOperaLabel extends View<CProduct> {
     @observable private isPosTExist: boolean;
     render(param: any): JSX.Element {
-        let { pointProduct } = param;
+        let { pointProduct } = param;        
         if (pointProduct.isPosTExist) this.isPosTExist = pointProduct.isPosTExist;
         else this.getPostOpera(pointProduct);
         return <this.content param={param} />;
