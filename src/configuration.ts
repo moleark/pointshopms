@@ -16,7 +16,6 @@ const GLOABLE_PRODUCTION = {
     SALESREGION_CN: 1,
     TIPDISPLAYTIME: 3000,
     CONTENTSITE: "https://web.jkchemical.com",
-    // JD: 'http://localhost:3016/jd',
     JD: 'https://joint.jkchemical.com/jd',
 }
 

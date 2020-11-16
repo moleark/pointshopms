@@ -25,7 +25,9 @@ export class VPointProductPostShow extends VPage<CProduct>{
         let { htmlFragment } = this.controller;
         if(this.isScale) this.setDetailMobSize();
         return <Page header='预览帖文'>
-            <div dangerouslySetInnerHTML={{ __html: htmlFragment }} className="reset-z-detail_mob"></div>
+            <div style={{height:`${window.innerHeight}px`}}>
+                <div dangerouslySetInnerHTML={{ __html: htmlFragment || '' }} className="reset-z-detail_mob"></div>
+            </div>
         </Page >
     })
 }

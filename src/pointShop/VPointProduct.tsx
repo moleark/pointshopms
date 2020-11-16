@@ -18,10 +18,10 @@ export class VPointProduct extends VPage<CPointProduct>{
     }
 
     private toUpDatePointProduct = async (currentPointProduct: any) => {
-        let { cApp } = this.controller;
+        /* let { cApp } = this.controller;
         let { cProduct } = cApp;
         cProduct.toProductUpShelf = false;
-        await cProduct.onProductSelected(currentPointProduct);
+        await cProduct.onProductSelected(currentPointProduct); */
     }
 
     private renderPointGenre = (pointProductGenre: any) => {

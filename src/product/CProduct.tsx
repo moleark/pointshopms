@@ -87,7 +87,8 @@ export class CProduct extends CUqBase {
      */
     openPointProductPostShow = async () => {
         this.htmlFragment = await this.getPointProductDetailPostHtml(this.currentProduct);
-        let getProductSource =  await this.uqs.积分商城.PointProductSource.obj({ pointProduct:this.currentProduct, sourceId: undefined });
+        let getProductSource =  await this.getSourceByPointProduct(this.currentProduct);
+        // let getProductSource = await this.uqs.积分商城.PointProductSource.obj({ pointProduct: this.currentProduct, sourceId: undefined });
         let isScale = false;
         if (getProductSource && getProductSource.type === 'jd.com') isScale = true;
         this.openVPage(VPointProductPostShow,isScale);
@@ -152,24 +153,24 @@ export class CProduct extends CUqBase {
         let searchArr = [];
         if (res.ok) {
             let result = await res.json();
-            let res1 = await FetchPost(GLOABLE.JD + '/getProductSellPrice', JSON.stringify({ sku: result.skuLib }));
-            let res2 = await res1.json();
-            this.pageIndex = result.pageIndex;
-            this.pageCount = result.pageCount; 
-            for (let key of result.hitResult) {
-                if (key.wstate === '1' && key.wyn === '1') {
-                    let findPriceBySku = res2.find(v => String(v.skuId) === String(key.wareId));
-                    if(findPriceBySku !==undefined)
-                        searchArr.push({
-                            description:key.wareName,
-                            descriptionC:key.wareName,
-                            grade: undefined,
-                            id: key.wareId,
-                            imageUrl: JDImagePath + JDImgSize + key.imageUrl,
-                            point: undefined,
-                            price: findPriceBySku,
-                            isValid: 1
-                        })
+            let res1 = await this.getJDProductPrice(result.skuLib);
+            if (res1 && res1.length) {
+                this.pageIndex = result.pageIndex;
+                this.pageCount = result.pageCount; 
+                for (let key of result.hitResult) {
+                    if (key.wstate === '1' && key.wyn === '1') {
+                        let findPriceBySku = res1.find(v => String(v.skuId) === String(key.wareId));
+                        if (findPriceBySku !== undefined)
+                            searchArr.push({
+                                description: key.wareName, descriptionC: key.wareName,
+                                grade: undefined,
+                                id: key.wareId,
+                                imageUrl: JDImagePath + JDImgSize + key.imageUrl,
+                                point: undefined,
+                                price: findPriceBySku,
+                                isValid: 1
+                            });
+                    }
                 }
             }
         }
@@ -188,15 +189,15 @@ export class CProduct extends CUqBase {
      */
     onProductSelected = async (currentProduct: any, productOrigin?: any) => {
         let { id, sourceId } = currentProduct;
-        let productGenre = undefined;
+        let /* productPrice = undefined, */ productGenre = undefined,
+            getProductCompleteInfo = undefined, getProductDetailByJD = undefined;
         /* 获取商品完整信息 */
-        let getProductCompleteInfo = undefined;
-        let getProductDetailByJD = undefined;
         if (productOrigin !== undefined) {
             let isExchangeProduct = await this.getProductSources(currentProduct);
             if (isExchangeProduct !== undefined) {
                 getProductCompleteInfo = await this.getPointProductLibLoad(isExchangeProduct.pointProduct.id);
                 productGenre = await this.getProductGenre(getProductCompleteInfo);
+                // productPrice = await this.getProductPrice(getProductCompleteInfo);
             }
             if (isExchangeProduct === undefined && this.currentSource.type === "jd.com") {
                 let resultByJD = await FetchPost(GLOABLE.JD + '/getProductDetail', JSON.stringify({ sku: sourceId,queryExts:'nappintroduction' }));
@@ -205,6 +206,7 @@ export class CProduct extends CUqBase {
         } else {
             getProductCompleteInfo = await this.getPointProductLibLoad(id);
             productGenre = await this.getProductGenre(currentProduct);
+            // productPrice = await this.getProductPrice(currentProduct);
         }
         let { genre, genreShow } = this.goalProductInfo;
         /* genreShow 保持状态或初始化  */
@@ -219,6 +221,7 @@ export class CProduct extends CUqBase {
         if (!this.isCreationProduct && FormatnewDate <= FormatEndDate) this.toProductUpShelf = false; /* 显示下架 */
         /* 商品信息 */
         let result = this.isCreationProduct ? { ...currentProduct } : getProductCompleteInfo;
+        // let result = this.isCreationProduct ? { ...currentProduct } : {...getProductCompleteInfo,price:productPrice};
         if (getProductDetailByJD) {
             result.grade = 1 + getProductDetailByJD.saleUnit;
             result.content = getProductDetailByJD.nappintroduction.replace(/\\n/g, '');
@@ -230,6 +233,49 @@ export class CProduct extends CUqBase {
         };
         this.isSelectedGenre = productGenre !== undefined ? true : (genreShow ? true : false);
         this.openVPage(VProductOperation);
+    }
+
+    /**
+     * 获取商品源与商品关系(by pointProduct)
+     */
+    getSourceByPointProduct = async(pointProduct:any) => {
+        return await this.uqs.积分商城.PointProductSource.obj({ pointProduct, sourceId: undefined });
+    }
+
+    /**
+     * 获取产品的价格
+     */
+    getProductPrice = async (pointProduct:any) => {
+        let getProductSource = await this.getSourceByPointProduct(pointProduct);
+        if (getProductSource === undefined) return undefined;
+        let { sourceId, type } = getProductSource;
+        if (type === "self") {
+            let result = await this.getSelfProductPrice(sourceId);
+            if (result) return result.price;
+            return result;
+        }
+        if (type === 'jd.com') {
+            let result = await this.getJDProductPrice(sourceId);
+            if (result && result.length) return result[0].price;
+            return undefined;
+        }
+    }
+
+    /**
+     * 获取自营产品价格
+     */
+    getSelfProductPrice = async (sourceId: string) => {
+        return {price:999999999};
+        // return this.uqs.product.GetPointProductPriceBySource.obj({sourceId});
+    }
+
+    /**
+     * 获取JD产品价格
+     */
+    getJDProductPrice = async (sourceId: string) => {
+        let result = await FetchPost(GLOABLE.JD + '/getProductSellPrice', JSON.stringify({ sku: sourceId }));
+        if (result.ok) return await result.json();
+        return undefined;
     }
 
     /**
@@ -398,7 +444,7 @@ export class CProduct extends CUqBase {
     }
 
     /**
-     * 获取商品源
+     * 获取商品源(by sourceId)
      */
     getProductSources = async (pointProduct: any) => {
         let type = this.currentSource.type === "selfsales" ? 'self' : this.currentSource.type;
@@ -409,9 +455,8 @@ export class CProduct extends CUqBase {
      * 添加商品的商品源
      */
     addPointProductSource = async (pointProduct: any) => {
-        let { type } = this.currentSource;
         let { sourceId } = pointProduct;
-        type = type === 'selfsales' ? 'self' : type;
+        let type = this.currentSource.type === "selfsales" ? 'self' : this.currentSource.type;
         await this.uqs.积分商城.PointProductSource.add({ pointProduct, arr1: [{ sourceId, type }] })
     }
 

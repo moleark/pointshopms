@@ -20,29 +20,27 @@ export class VCreationProduct extends VPage<CProduct>{
     }
 
     private renderPointProduct = (pointProduct: any) => {
-        let { imageUrl, description, descriptionC, radioy, unit, price } = pointProduct;
+        let { imageUrl, description, descriptionC, radioy, unit, price , retail } = pointProduct;
+        let { currentSource } = this.controller;        
+        let showPrice = currentSource.type=== "jd.com" ? (price ? price.price :'') : retail;
         return <div className="row m-1 w-100">
             <div title={description} className="col-4 m-0 p-0"><PointProductImage chemicalId={imageUrl} className="w-100" /></div>
             <div className="col-8 small py-1">
                 <div>{descriptionC}</div>
                 <div className="my-2">{radioy}{unit}</div>
-                {
-                    price 
-                        ? <div className="text-danger h5 mt-1">￥{price ? price.price :''}</div>
-                        : null
-                }
+                {showPrice ? <div className="text-danger h5 mt-1">￥{showPrice}</div> : null}
             </div>
         </div>
     }
 
     private ProductSelected = async (pointProduct: any) => {
         let { onProductSelected ,currentSource} = this.controller;
-        let { description, descriptionC, radioy, unit, product, id, imageUrl } = pointProduct;
+        let { description, descriptionC, radioy, unit, product, id, imageUrl,retail,price } = pointProduct;
         let pointProductInfo;
         if (currentSource.id !== 2) {
-            pointProductInfo = { description, descriptionC, grade: `${radioy}${unit}`, id: undefined, imageUrl: product.obj.imageUrl, point: undefined, sourceId: id.id, isValid: 1 };
+            pointProductInfo = { description, descriptionC, grade: `${radioy}${unit}`, id: undefined, imageUrl: product.obj.imageUrl, point: undefined, sourceId: id.id,  price:retail, isValid: 1 };
         } else {
-            pointProductInfo = { description, descriptionC, grade: undefined, id: undefined, imageUrl: imageUrl, point: undefined, sourceId: id, isValid: 1 };
+            pointProductInfo = { description, descriptionC, grade: undefined, id: undefined, imageUrl: imageUrl, point: undefined, sourceId: id, price:price.price, isValid: 1 };
         }
         await onProductSelected(pointProductInfo, '新增');
     }

@@ -86,7 +86,7 @@ export class VProductOperation extends VPage<CProduct>{
     private page = observer(() => {
         let { EDIT, UPSHELF, DOWNSHELF, REUPSHELF } = OperationAdapt;
         let { toGenreSelect, openVUpdatePicture, toProductUpShelf, isCreationProduct, goalProductInfo } = this.controller;
-        let { genreShow, imageUrl, point, startDate, endDate, description, descriptionC, grade } = goalProductInfo;
+        let { genreShow, imageUrl, point, startDate, endDate, description, descriptionC, grade, /* price */} = goalProductInfo;
         startDate = startDate !== undefined ? momentFormat(startDate) : startDate;
         endDate = endDate !== undefined ? momentFormat(endDate) : endDate;
         let genreData = { point, startDate, endDate, grade };
@@ -117,7 +117,9 @@ export class VProductOperation extends VPage<CProduct>{
                 <div className="m-1 w-100 d-flex flex-column position-relative">
                     <div title={description} className="w-75 m-auto"><PointProductImage chemicalId={imageUrl} className="w-100" /></div>
                     <small className="pt-1">{descriptionC}</small>
-                    <div className="d-flex justify-content-between px-1 align-items-center">
+                    {/* <small className="pt-2 pb-1">{grade}</small> */}
+                    <div className="d-flex justify-content-between pr-1 align-items-center">
+                        {/* {price ? <div className="text-danger h5 m-0">￥{price}</div> : null} */}
                         <>{grade}</>
                         <button onClick={() => openVUpdatePicture('更新图片')}
                             className="btn btn-primary w-6c ml-auto" >
