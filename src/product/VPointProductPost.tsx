@@ -7,25 +7,28 @@ import { observable } from 'mobx';
 
 export class VPointProductPost extends VPage<CProduct>{
     @observable textarea: HTMLTextAreaElement;
+    @observable curPostContent: string = '';   /* 当前帖文内容 */
 
     async open(param?: any) {
+        let { productDetailPost } = this.controller.currentProduct;
+        this.curPostContent = productDetailPost;
         this.openPage(this.page);
     }
 
     onSave = async () => {
         if (this.textarea.value !== '') {
             let { onSavePointProductPost } = this.controller;
-            await onSavePointProductPost(this.textarea.value)
-        }
-        // this.textarea.value = '';
+            await onSavePointProductPost(this.textarea.value);
+            this.closePage();
+        };
     }
 
     private page = observer(() => {
-        let { currentPostContent, postType, openPointProductPostShow, cApp } = this.controller;
+        let { openPointProductPostShow, cApp } = this.controller;
         let { cMedia } = cApp
-        let header = `${postType !== undefined ? postType : ''}帖文`;
+        let header = `${this.curPostContent !== undefined ? '编辑' : '创建'}帖文`;
         let right = <div>
-            {currentPostContent && <button onClick={openPointProductPostShow} type="button" className="btn btn-sm btn-success mr-3">预览</button>}
+            {this.curPostContent && <button onClick={openPointProductPostShow} type="button" className="btn btn-sm btn-success mr-3">预览</button>}
             <button onClick={() => cMedia.openMainPage()} type="button" className="btn btn-sm btn-success mr-3">图片</button>
             {/* <button onClick={() => { document.location.href = "http://localhost:7799?type=otherfiles" }} type="button" className="btn btn-sm btn-success mr-3">图片</button> */}
             <button onClick={() => { this.onSave() }} type="button" className={`btn btn-sm btn-success mr-3`}>保存</button>
@@ -33,10 +36,10 @@ export class VPointProductPost extends VPage<CProduct>{
 
         return <Page header={header} right={right}>
             <div ref={this.refIframe} className='py-1'>
-                <textarea ref={tt => this.textarea = tt} className="w-100 h-100" defaultValue={currentPostContent} />
+                <textarea ref={tt => this.textarea = tt} className="w-100 h-100" defaultValue={this.curPostContent} />
             </div >
             {/* <div className="mx-3 py-2 h-100 d-flex flex-column">
-                <textarea ref={tt => this.textarea = tt} className="flex-fill mb-2" defaultValue={currentPostContent} rows={25} />
+                <textarea ref={tt => this.textarea = tt} className="flex-fill mb-2" defaultValue={this.curPostContent} rows={25} />
             </div > */}
         </Page >
     })

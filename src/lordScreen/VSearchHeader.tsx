@@ -36,7 +36,7 @@ export class VBrowseProductSearchHeader extends VSearchHeader {
 
 export function searchKeyShow(searchKey: string, action: any) {
     return searchKey ? <div className="bg-white d-flex justify-content-between py-1 px-3 border-bottom">
-        <span><small className="small text-muted">搜索: </small>{searchKey}</span>
+        <span className="text-truncate"><small className="small text-muted">搜索: </small>{searchKey}</span>
         <span onClick={action}><FA name="times-circle-o" className="text-danger" /></span>
     </div> : null;
 }

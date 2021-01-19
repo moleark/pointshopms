@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VPage, Page, List, FA } from 'tonva';
+import { VPage, Page, List, FA, Scroller, QueryPager } from 'tonva';
 import { CProduct, ProductSources } from 'product/CProduct';
 import { PointProductImage } from 'tools/productImage';
 import { searchKeyShow } from 'lordScreen/VSearchHeader';
@@ -9,9 +9,18 @@ import { observable } from 'mobx';
 import classNames from 'classnames';
 export const noProductNone: JSX.Element = <div className="mt-4 d-flex justify-content-center text-secondary">『 暂无商品 』</div>;
 
+export function renderPropItem(caption: string, value: any, captionClass?: string) {
+    if (value === null || value === undefined || value === '0') return null;
+    let capClass = captionClass ? classNames(captionClass) : classNames("text-muted");
+    let valClass = captionClass ? classNames(captionClass) : "";
+    return <>
+        <div className={classNames("col-6 col-sm-2 pr-0 small align-self-center", capClass)}> {caption}</div>
+        <div className={classNames("col-6 col-sm-4", valClass)}>{value}</div>
+    </>;
+}
+
 export class VProduct extends VPage<CProduct>{
     private filterGenre: string;
-    @observable postSource: string = '主列表';
     async open(param?: any) {
         this.openPage(this.page);
     }
@@ -24,46 +33,30 @@ export class VProduct extends VPage<CProduct>{
      * 恢复所有数据
      */
     refreshProduct = async () => {
-        let { getProductLibrary } = this.controller;
+        let { getProductLib } = this.controller;
         this.filterGenre = undefined;
-        await getProductLibrary();
+        await getProductLib();
     }
 
-    /* renderPointProductPost = (pointProduct: any) => {
-        let { openPointProductPost } = this.controller;
-        let { isPosTExist } = pointProduct;
-        return <div className="d-flex justify-content-end mx-2" onClick={(e) => { e.stopPropagation(); openPointProductPost(pointProduct, isPosTExist ? '编辑' : '创建', this.postSource) }}>
-            <div>帖文</div>
-            <div>
-                {
-                    isPosTExist
-                        ? <span><FA name="edit" size="lg" className="mx-2 text-primary" /></span>
-                        : <span><FA name="plus-circle" size="lg" className="mx-2 text-success" /></span>
-                }
-            </div>
-        </div>
-        // return null;
-    } */
-
     renderPostOperaLabel = (pointProduct: any) => {
-        return this.controller.renderPostOperaLabel(pointProduct, this.postSource)
+        return this.controller.renderPostOperaLabel(pointProduct)
     }
 
     protected renderPointProduct = (pointProduct: any) => {
-        let { description, descriptionC, imageUrl, point, grade } = pointProduct;
+        let { productOther } = pointProduct;
+        let { description, descriptionC, imageUrl, point, grade } = pointProduct.props || pointProduct;
+        let price = productOther?.price ? <span className="text-danger h5 ">￥{productOther.price}</span> : null;
         return <div className="row m-1 w-100">
-            <div title={description} className="col-4 m-auto p-0"><PointProductImage chemicalId={imageUrl} className="w-100" style={{maxHeight:'30vw'}} /></div>
-            <div className="col-8 small py-1">
+            <div title={description} className="col-lg-3 col-sm-4 col-4 m-auto p-0"><PointProductImage chemicalId={imageUrl} className="w-100" /></div>
+            <div className="col-lg-9 col-sm-8 col-8 small py-1">
                 <div>{descriptionC}</div>
-                <div className="mt-2 mb-1">{grade}</div>
                 <div className="row m-0 pt-1">
-                    <div className="col-5 m-0 p-0">
-                        <span className="text-danger h5">{point}</span>
-                        <small>分</small>
-                    </div>
+                    {renderPropItem('产品编号', productOther?.origin,'pt-1')}
+                    {renderPropItem('规格', grade,'pt-1')}
+                    {renderPropItem('价格', price,"pt-1 my-0")}
+                    {renderPropItem('积分', <><span className="text-danger h5">{point}</span><small>分</small></>,'pt-1')}
                 </div>
-                {this.renderPostOperaLabel(pointProduct)}
-                {/* {this.renderPointProductPost(pointProduct)} */}
+                <div className="py-2 mr-lg-5 mt-sm-4">{this.renderPostOperaLabel(pointProduct)}</div>
             </div>
         </div>
     }
@@ -82,11 +75,26 @@ export class VProduct extends VPage<CProduct>{
         </div>
     }
 
+    private loadPointProductMore = async() => {
+        this.controller.cApp.cProduct.start('');
+    }
+
+    retnderPointProductList = (pointProduct:any) => {
+        let { onProductSelected } = this.controller;
+        return <List items={pointProduct} item={{ render: this.renderPointProduct, onClick: onProductSelected }} none={noProductNone} />
+    }
+
     page = observer(() => {
-        let { productLibrary, onProductSelected, filterByProductGenre, cApp } = this.controller;
+        let { pointProductLib, filterByProductGenre, cApp } = this.controller;
         let { cGenre } = cApp;
         let siteHeader = this.renderVm(VSiteHeader);
         let genreNone = <div className="ml-4 pl-2 small text-secondary">暂无商品类型,请去新增类型 &rArr; 我的 &raquo;&raquo; 商品类型</div>
+        let pointProducts = (pointProductLib instanceof Array) ? pointProductLib : pointProductLib?.items?.slice(0, 10);
+        let loadProductMoreUI: JSX.Element;
+        if (!(pointProductLib instanceof Array) && pointProducts?.length >= 10) {
+            loadProductMoreUI = <div className="py-4 text-center text-dark border-top cursor-pointer" onClick={this.loadPointProductMore}><FA name="hand-o-right" className="text-primary" size="lg" /> 加载更多</div>
+        };
+
         return <div className="bg-light">
             {siteHeader}
             <div className="border-bottom mb-1 bg-light pt-2">
@@ -104,7 +112,8 @@ export class VProduct extends VPage<CProduct>{
                         className: 'w-25 bg-transparent'
                     }} none={genreNone} />
             </div>
-            <List items={productLibrary} item={{ render: this.renderPointProduct, onClick: (v: any) => { this.controller.currentSource = ProductSources[0]; onProductSelected(v) } }} none={noProductNone} />
+            {this.retnderPointProductList(pointProducts)}
+            {loadProductMoreUI}
         </div>
     })
 }
@@ -114,46 +123,29 @@ export class VProduct extends VPage<CProduct>{
  */
 export class VSearchProduct extends VProduct {
     @observable searchKey: string;
-    @observable searchProductLibrary: any[] = [];   /* 商品库搜索列表  */
-    @observable postSource: string = '检索列表';
     async open(param?: any) {
-        let { searchKey, searchProduct } = param;
-        this.searchKey = searchKey;
-        this.searchProductLibrary = searchProduct;
+        this.searchKey = param;
         this.openPage(this.page);
     }
 
-    /* renderPointProductPost = (pointProduct: any) => {
-        let { openPointProductPost } = this.controller;
-        let { isPosTExist } = pointProduct;
-        return <div className="d-flex justify-content-end mx-2" onClick={(e) => { e.stopPropagation(); openPointProductPost(pointProduct, isPosTExist ? '编辑' : '创建', this.postSource) }}>
-            <div>帖文</div>
-            <div>
-                {
-                    isPosTExist
-                        ? <span><FA name="edit" size="lg" className="mx-2 text-primary" /></span>
-                        : <span><FA name="plus-circle" size="lg" className="mx-2 text-success" /></span>
-                }
-            </div>
-        </div>
-    } */
-
+    onScrollBottom = async (scroller: Scroller) => {
+        scroller.scrollToBottom();
+        let { searchProductLib } = this.controller;
+        searchProductLib.more();
+    }
 
     refreshProduct = async () => {
-        let { getProductLibrary } = this.controller;
+        let { searchByKey } = this.controller;
         this.searchKey = undefined;
-        await getProductLibrary();
-        // this.searchProductLibrary = await isPosTExist(productLibrary);
-        this.controller.searchProductLibrary = this.controller.productLibrary;
-        // this.controller.searchProductLibrary = await isPosTExist(productLibrary);
+        await searchByKey('');
     }
 
     page = observer(() => {
-        let { onProductSelected, renderSearchHeader, searchProductLibrary } = this.controller;
+        let { renderSearchHeader, searchProductLib } = this.controller;
         let header = <div className="mx-1 mr-3 w-100">{renderSearchHeader()}</div>;
-        return <Page header={header} headerClassName="bg-light">
+        return <Page header={header} headerClassName="bg-light" onScrollBottom={this.onScrollBottom}>
             {this.searchKey && searchKeyShow(this.searchKey, this.refreshProduct)}
-            <List items={searchProductLibrary} item={{ render: this.renderPointProduct, onClick: onProductSelected }} none={noProductNone} />
+            <div className="mb-1">{this.retnderPointProductList(searchProductLib)}</div>
         </Page>
     })
 }

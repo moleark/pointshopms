@@ -14,6 +14,7 @@ export interface UqProduct {
     SearchProductByCategory: Query;
     GetFutureDeliveryTime: Query;
     SearchPointProduct: Query;
+    GetPointProductMoreBySource: Query;
 }
 export interface UqHr {
     employee: Tuid;
@@ -78,6 +79,7 @@ export interface UqPointShop {
     GetMaxPoints: Query;
     GetVisitPointProducts: Query;
     GetPointProductBySource: Query;
+    GetPointProductsByPage: Query;
 }
 
 export interface UQs {

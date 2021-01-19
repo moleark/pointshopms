@@ -1,4 +1,4 @@
-import { nav, UserCache, } from 'tonva';
+import { BoxId, nav, UserCache, } from 'tonva';
 // import { UQs } from 'uqs';
 import { VMain } from 'VMain';
 import { CUqApp } from 'CBase'
@@ -14,11 +14,12 @@ import { GLOABLE } from 'configuration';
 import { CMedia } from 'media/CMedia';
 import { res } from 'res';
 import { CPosts } from 'posts/CPosts';
+import { PointProduct } from 'model';
 // import { CMedia } from 'media-ng-07/src';
 
 export class CPointShopMsApp extends CUqApp {
     // get uqs(): UQs { return this._uqs; }
-
+    private cache: Map<number, PointProduct>;
     topKey: any;
     currentSalesRegion: any;
     currentLanguage: any;
@@ -58,10 +59,11 @@ export class CPointShopMsApp extends CUqApp {
         if (this.isLogined) {
             this.currentUser.setUser(this.user);
         }
+        this.cache = new Map();
         this.cLordScreen = this.newC(CLordScreen);
         this.cMe = this.newC(CMe);
         this.cProduct = this.newC(CProduct);
-        await this.cProduct.getProductLibrary();
+        await this.cProduct.getProductLib();
         this.cPointProduct = this.newC(CPointProduct);
         this.cGenre = this.newC(CGenre);
         await this.cGenre.getProductGenres();
@@ -94,5 +96,16 @@ export class CPointShopMsApp extends CUqApp {
 
     useUser(userId: number) {
         this.userCache.use(userId);
+    }
+
+    getPointProduct(id: number | BoxId): PointProduct {
+        if (!id) return;
+        if (typeof id === 'object') id = id.id;
+        let product = this.cache.get(id);
+        if (!product) {
+            product = new PointProduct(this, id);
+            this.cache.set(id, product);
+        }
+        return product;
     }
 }

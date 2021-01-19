@@ -3,7 +3,7 @@ import { VPage, Page, List, FA, LMR, Scroller} from 'tonva';
 import { CProduct, ProductSources } from 'product/CProduct';
 import { PointProductImage } from 'tools/productImage';
 import { observer } from 'mobx-react';
-import { noProductNone } from './VProduct';
+import { noProductNone, renderPropItem } from './VProduct';
 import { observable } from 'mobx';
 import { GLOABLE } from 'configuration';
 import classNames from 'classnames';
@@ -20,27 +20,38 @@ export class VCreationProduct extends VPage<CProduct>{
     }
 
     private renderPointProduct = (pointProduct: any) => {
-        let { imageUrl, description, descriptionC, radioy, unit, price , retail } = pointProduct;
+        let { imageUrl, description, descriptionC, radioy, unit, price , retail,origin } = pointProduct;
         let { currentSource } = this.controller;        
         let showPrice = currentSource.type=== "jd.com" ? (price ? price.price :'') : retail;
         return <div className="row m-1 w-100">
             <div title={description} className="col-4 m-0 p-0"><PointProductImage chemicalId={imageUrl} className="w-100" /></div>
             <div className="col-8 small py-1">
                 <div>{descriptionC}</div>
-                <div className="my-2">{radioy}{unit}</div>
-                {showPrice ? <div className="text-danger h5 mt-1">￥{showPrice}</div> : null}
+                <div className="row m-0 pt-1">
+                    {renderPropItem('产品编号', origin)}
+                </div>
+                <div style={{paddingLeft:15}}>
+                    <div className="my-2">{radioy}{unit}</div>
+                    {showPrice ? <div className="text-danger h5 mt-1">￥{showPrice}</div> : null}
+                </div>
             </div>
         </div>
     }
 
     private ProductSelected = async (pointProduct: any) => {
-        let { onProductSelected ,currentSource} = this.controller;
-        let { description, descriptionC, radioy, unit, product, id, imageUrl,retail,price } = pointProduct;
+        let { onProductSelected, currentSource } = this.controller;
+        let { description, descriptionC, radioy, unit, product, id, imageUrl,retail,price, origin } = pointProduct;
         let pointProductInfo;
         if (currentSource.id !== 2) {
-            pointProductInfo = { description, descriptionC, grade: `${radioy}${unit}`, id: undefined, imageUrl: product.obj.imageUrl, point: undefined, sourceId: id.id,  price:retail, isValid: 1 };
+            pointProductInfo = {
+                description, descriptionC, grade: `${radioy}${unit}`, id: undefined,
+                imageUrl: product.obj.imageUrl, point: undefined, sourceId: id.id, price: retail, isValid: 1, origin: origin
+            };
         } else {
-            pointProductInfo = { description, descriptionC, grade: undefined, id: undefined, imageUrl: imageUrl, point: undefined, sourceId: id, price:price.price, isValid: 1 };
+            pointProductInfo = {
+                description, descriptionC, grade: undefined, id: undefined,
+                imageUrl: imageUrl, point: undefined, sourceId: id, price: price.price, isValid: 1, origin: id
+            };
         }
         await onProductSelected(pointProductInfo, '新增');
     }
@@ -99,11 +110,10 @@ export class VCreationProduct extends VPage<CProduct>{
         let footer = undefined;
         if ((searchProductsToCreation instanceof Array) && searchProductsToCreation.length)
             footer = this.renderPagination();
-        
         return <Page header="商品新增" onScrollBottom={this.onScrollBottom} footer={footer}>
             <div className="p-2 border-bottom bg-white">
                 <div className="d-flex flex-column mb-2">
-                    <div className="my-1">商品源：<small>{currentSource ? currentSource.type : null}</small></div>
+                    <div className="my-1">商品源：<small>{currentSource ? currentSource.nick ||currentSource.type : null}</small></div>
                     <List items={ProductSources} item={{ render: this.renderDataSources, onClick: (v: any) => { changeCurrentProductSource(v) } }} className="d-flex bg-white w-100 flex-wrap" none="暂无商品源" />
                 </div>
                 <LMR right={LMRRight}>
