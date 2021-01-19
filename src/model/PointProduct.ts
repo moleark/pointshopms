@@ -41,7 +41,7 @@ export class PointProduct {
 	}
 
 	private async loadBase() {
-		if (this.props) return;
+		// if (this.props) return;
 		let ret = await this.cApp.cProduct.getPointProductLibLoad(this.id);// this.cApp.uqs.积分商城.PointProductLib.load(this.id);
 		this.props = ret;
 	}

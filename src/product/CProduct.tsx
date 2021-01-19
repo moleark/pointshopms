@@ -112,7 +112,7 @@ export class CProduct extends CUqBase {
 
     getPointProductDetail = async(pointProduct:any) => {
         let product = this.cApp.getPointProduct(pointProduct.id);
-        product.props = undefined;
+        // product.props = undefined;
         product.productGenre = undefined;
         await product.loadProductDetail();
         return product;
