@@ -59,3 +59,10 @@ export function nameValidation(value: string) {
 export function productGenreValidation(value: string) {
     return (value && value.length > 10) ? "类型最多10个字！" : undefined;
 }
+
+export function brandMinDiscountValidation(value: string) {
+    let nValue = Number(value);
+    if (isNaN(nValue)) return "折扣格式不正确,请重新输入！"
+    if (nValue >= 0 && nValue <= 100) return undefined;
+    return '折扣百分比范围 0 ~ 100';
+}

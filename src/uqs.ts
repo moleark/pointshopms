@@ -80,6 +80,8 @@ export interface UqPointShop {
     GetVisitPointProducts: Query;
     GetPointProductBySource: Query;
     GetPointProductsByPage: Query;
+    BrandMinDiscount: Map;
+    getBrandMinDiscount: Query;
 }
 
 export interface UQs {

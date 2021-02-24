@@ -22,3 +22,11 @@ code {
   }
 }
  */
+
+.ant-slider-track{
+  background-color: #007bff;
+}
+
+.ant-input-number-disabled {
+    color: rgba(0, 0, 0, .5);
+}

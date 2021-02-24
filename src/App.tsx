@@ -4,6 +4,7 @@ import { NavView, start, nav } from 'tonva';
 import { CPointShopMsApp } from "CPointShopMsApp";
 import { appConfig } from 'configuration';
 
+
 nav.setSettings(appConfig);
 class App extends React.Component {
 

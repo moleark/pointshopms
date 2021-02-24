@@ -16,6 +16,7 @@ import { res } from 'res';
 import { CPosts } from 'posts/CPosts';
 import { PointProduct } from 'model';
 // import { CMedia } from 'media-ng-07/src';
+import { CBrandDiscount } from './brandDiscount/CBrandDiscount';
 
 export class CPointShopMsApp extends CUqApp {
     // get uqs(): UQs { return this._uqs; }
@@ -33,6 +34,7 @@ export class CPointShopMsApp extends CUqApp {
     cReport: CReport;
     cMedia: CMedia;
     cPosts: CPosts;
+    cBrandDiscount: CBrandDiscount;
 
     private userCache: UserCache<any>;
     protected async internalStart() {
@@ -71,8 +73,10 @@ export class CPointShopMsApp extends CUqApp {
         this.cReport = this.newC(CReport);
         this.cMedia = this.newC(CMedia);
         this.cPosts = this.newC(CPosts);
+        this.cBrandDiscount = this.newC(CBrandDiscount);
         this.topKey = nav.topKey();
 
+        // this.cBrandDiscount.openBrandDiscount();
         // this.cLottery.openLotteryProduct();
         // this.cReport.openPointsDist();
         // this.cReport.openProductViews();

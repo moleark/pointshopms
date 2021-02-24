@@ -34,6 +34,10 @@ export class VBrowseProductSearchHeader extends VSearchHeader {
     placeholder: string = '搜索商品';
 }
 
+export class VProductBrandSearchHeader extends VSearchHeader {
+    placeholder: string = '搜索品牌';
+}
+
 export function searchKeyShow(searchKey: string, action: any) {
     return searchKey ? <div className="bg-white d-flex justify-content-between py-1 px-3 border-bottom">
         <span className="text-truncate"><small className="small text-muted">搜索: </small>{searchKey}</span>

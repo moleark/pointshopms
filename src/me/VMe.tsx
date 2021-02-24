@@ -24,6 +24,11 @@ export class VMe extends VPage<CMe> {
         await this.controller.openProductGenre();
     }
 
+    private openBrandDiscount = async () => {
+        let { cApp } = this.controller;
+        await cApp.cBrandDiscount.openBrandDiscount();
+    }
+
     private openLottery = async () => {
         // let { cApp } = this.controller;
         // let { cLottery } = cApp;
@@ -108,6 +113,11 @@ export class VMe extends VPage<CMe> {
                     type: 'component',
                     component: <IconText iconClass="text-info mr-2" icon="th-large" text="商品类型" />,
                     onClick: this.openProuctGenre
+                },
+                {
+                    type: 'component',
+                    component: <IconText iconClass="text-info mr-2" icon="th-large" text="品牌折扣" />,
+                    onClick: this.openBrandDiscount
                 },
                 {
                     type: 'component',
