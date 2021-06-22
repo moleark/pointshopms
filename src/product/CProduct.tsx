@@ -379,6 +379,7 @@ export class CProduct extends CUqBase {
             let { point: pfPoint, imageUrl: pfImageUrl, startDate: pfStartDate, endDate: pfEndDate } = pointProductFind;
             isToupdateProduct = pfPoint !== point || pfImageUrl !== imageUrl || pfStartDate !== startDate || pfEndDate !== endDate;
         };
+        productInfo.isValid = 1;
         if (isToupdateProduct) await this.savePointProduct(productInfo);
         await this.getPointProductDetail(productInfo);
     }
@@ -410,6 +411,7 @@ export class CProduct extends CUqBase {
      */
     upShelfProduct = async (productInfo: any) => {
         productInfo.id = undefined;
+        productInfo.isValid = 1;
         let saveId = await this.savePointProduct(productInfo);
         productInfo.id = saveId.id;
         this.currentProduct = productInfo;
@@ -427,6 +429,7 @@ export class CProduct extends CUqBase {
      */
     downShelfProduct = async (productInfo: any) => {
         productInfo.endDate = momentFormat();
+        productInfo.isValid = 0;
         await this.savePointProduct(productInfo);
     }
 
@@ -435,7 +438,7 @@ export class CProduct extends CUqBase {
      */
     savePointProduct = async (productInfo: any) => {
         let { id, description, descriptionC, grade, point, startDate, endDate, imageUrl, isValid } = productInfo;
-        return await this.uqs.积分商城.PointProductLib.save(id, { description, descriptionC, grade, point, startDate, endDate, imageUrl, isValid: isValid || 1 });
+        return await this.uqs.积分商城.PointProductLib.save(id, { description, descriptionC, grade, point, startDate, endDate, imageUrl, isValid: isValid });
     }
 
     /**
