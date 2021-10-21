@@ -218,47 +218,51 @@ export class CProduct extends CUqBase {
      * 查询来自JD的产品
      */
     searchPointProductByJD = async (keyWord: string) => {
-        let JDImgSize = 'n0/';
-        let param = { Keyword: keyWord ,pageIndex: this.pageIndex,sortType:'price_asc' };//sortType:'price_asc' 
-        let res = await FetchPost(GLOABLE.JD +'/search', JSON.stringify(param));
-        let searchArr = [];
-        if (res.ok) {
-            let result = await res.json();
-            let res1 = await this.getJDProductPrice(result.skuLib);
-            if (res1 && res1.length) {
-                this.pageIndex = result.pageIndex;
-                this.pageCount = result.pageCount; 
-                for (let key of result.hitResult) {
-                    if (key.wstate === '1' && key.wyn === '1') {
-                        let findPriceBySku = res1.find(v => String(v.skuId) === String(key.wareId));
-                        if (findPriceBySku !== undefined)
-                            searchArr.push({
-                                description: key.wareName, descriptionC: key.wareName,
-                                grade: undefined,
-                                id: key.wareId,
-                                imageUrl: JDImagePath + JDImgSize + key.imageUrl,
-                                point: undefined,
-                                price: findPriceBySku,
-                                isValid: 1,
-                                origin:key.wareId
-                            });
+        try {
+            let JDImgSize = 'n0/';
+            let param = { Keyword: keyWord, pageIndex: this.pageIndex, sortType: 'price_asc' };//sortType:'price_asc' 
+            let res = await FetchPost(GLOABLE.JD + '/search', JSON.stringify(param));
+            let searchArr = [];
+            if (res.ok) {
+                let result = await res.json();
+                let res1 = await this.getJDProductPrice(result.skuLib);
+                if (res1 && res1.length) {
+                    this.pageIndex = result.pageIndex;
+                    this.pageCount = result.pageCount;
+                    for (let key of result.hitResult) {
+                        if (key.wstate === '1' && key.wyn === '1') {
+                            let findPriceBySku = res1.find(v => String(v.skuId) === String(key.wareId));
+                            if (findPriceBySku !== undefined)
+                                searchArr.push({
+                                    description: key.wareName, descriptionC: key.wareName,
+                                    grade: undefined,
+                                    id: key.wareId,
+                                    imageUrl: JDImagePath + JDImgSize + key.imageUrl,
+                                    point: undefined,
+                                    price: findPriceBySku,
+                                    isValid: 1,
+                                    origin: key.wareId
+                                });
+                        }
                     }
                 }
-            }
-        }
-        this.searchProductsToCreation = searchArr;
+            };
+            this.searchProductsToCreation = searchArr;
+        } catch (error) { this.searchProductsToCreation = []; }
     }
 
     /**
      * 获取JD产品价格
      */
     getJDProductPrice = async (sourceId: string) => {
-        let result = await FetchPost(GLOABLE.JD + '/getProductSellPrice', JSON.stringify({ sku: sourceId }));
-        if (!result.ok) return;
-		let res = await result.json();
-		if (!res || !res.length) return;
-        return res;
-    }
+        try {
+            let result = await FetchPost(GLOABLE.JD + '/getProductSellPrice', JSON.stringify({ sku: sourceId }));
+            if (!result.ok) return;
+            let res = await result.json();
+            if (!res || !res.length) return;
+            return res;
+        } catch (error) { return; };
+    };
 
     /**
      * 选择商品
